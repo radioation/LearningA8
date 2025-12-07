@@ -1,0 +1,20 @@
+# Compiled output
+*.o
+*.s
+*.bin
+*.exe
+*.xex
+*.atr
+*.rom
+
+# Linker map files
+*.map
+*.lbl
+
+# Temporary or build-related files
+*.bak
+*.tmp
+*.lst
+*.dbg
+
+

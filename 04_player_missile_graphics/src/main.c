@@ -8,7 +8,7 @@ unsigned char pmg_memory[ 2048 ]; // Double line resolution only needs 1024 byte
 #pragma data-name( pop );
 
 
-// sprite data from https://bocianu.gitlab.io/spred/
+// player data from https://bocianu.gitlab.io/spred/
 const unsigned char height = 0x0e;
 
 /*
@@ -23,31 +23,32 @@ const unsigned char height = 0x0e;
    };
 */
 
-//sprite 0
-const unsigned char frames0_0[0x0e] = {
+//player 0
+const unsigned char player0_0[0x0e] = {
     0x00, 0x01, 0x01, 0x03, 0x02, 0x03, 0x03, 0x03, 0x06, 0x0d, 0x1a, 0x3a, 0x38, 0x08
 };
 
 
-//sprite 1
-const unsigned char frames1_0[0x0e] = {
+//player 1
+const unsigned char player1_0[0x0e] = {
     0x01, 0x00, 0x00, 0x01, 0x03, 0x00, 0x04, 0x0c, 0x19, 0x33, 0x67, 0x47, 0x07, 0x06
 };
 
 
-//sprite 2
-const unsigned char frames2_0[0x0e] = {
+//player 2
+const unsigned char player2_0[0x0e] = {
     0x00, 0x80, 0x80, 0xc0, 0x40, 0xc0, 0xc0, 0xc0, 0x60, 0xb0, 0x58, 0x5c, 0x1c, 0x10
 };
 
 
-//sprite 3
-const unsigned char frames3_0[0x0e] = {
+//player 3
+const unsigned char player3_0[0x0e] = {
     0x80, 0x00, 0x00, 0x80, 0xc0, 0x00, 0x20, 0x30, 0x98, 0xcc, 0xe6, 0xe2, 0xe0, 0x60
 };
 
 
-
+// combined missile
+const unsigned char mplayer[] = { 0x99, 0xbd, 0xff, 0xbd, 0x99  };
 
 
 int main(void)
@@ -62,7 +63,7 @@ int main(void)
     memset( pmg_memory, 0, sizeof(pmg_memory) );
 
     // set DMACTL
-    OS.sdmctl = 46;    // POKE 559, 46 // double line resolution
+    OS.sdmctl = 62;    // POKE 559, 46 double line resolution 62 single
 
     // set GRACTL
     GTIA_WRITE.gractl = 0x03; // POKE 53277,e players and missile
@@ -75,8 +76,9 @@ int main(void)
     GTIA_WRITE.sizep3 = 0x00;
 
 
+
     OS.color2 = 0x0;
-    OS.color3 = 0x4;
+    OS.color3 = 0x2A;
     //OS.color4 = 0x0F;
     OS.pcolr0= 0x08;
     OS.pcolr1= 0x32;
@@ -93,12 +95,19 @@ int main(void)
     GTIA_WRITE.hposp2=0x44;
     GTIA_WRITE.hposp3=0x44;
 
+    GTIA_WRITE.hposm3 = 80;
+    GTIA_WRITE.hposm2 = 82; 
+    GTIA_WRITE.hposm1 = 84;
+    GTIA_WRITE.hposm0 = 86;
+    
 
     // Copy shapes to PMG array
-    memcpy( pmg_memory + 572 , frames0_0, height );
-    memcpy( pmg_memory + 700 , frames1_0, height );
-    memcpy( pmg_memory + 828 , frames2_0, height );
-    memcpy( pmg_memory + 956 , frames3_0, height );
+    memcpy( pmg_memory + 768 + 30 , mplayer, 5 );
+    memcpy( pmg_memory + 1024 + 160, player0_0, height );
+    memcpy( pmg_memory + 1280 + 160 , player1_0, height );
+    memcpy( pmg_memory + 1536 + 160 , player2_0, height );
+    memcpy( pmg_memory + 1792 + 160 , player3_0, height );
+
 
     while(1) {
     }

@@ -1,6 +1,5 @@
 # Compiled output
 *.o
-*.s
 *.bin
 *.exe
 *.xex

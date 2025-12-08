@@ -5,7 +5,8 @@
 
 
 extern unsigned char __fastcall__ u_add8(unsigned char a, unsigned char b);
-extern void __fastcall__ zero10( int8_t* msg );
+extern void __fastcall__ zero10( uint8_t* msg );
+extern void __fastcall__ filler( const uint8_t val, const uint8_t count, uint8_t* msg );
 
 void main(void)
 {
@@ -22,14 +23,22 @@ void main(void)
     // pointer call
     memset( message, 1, 10 );
     for( i=0; i < 10; ++i ) {
-        cprintf("%d", message[i] );
-    }
-    zero10( message );
-    for( i=0; i < 10; ++i ) {
-        cprintf("%d", message[i] );
+        cprintf("%d,", message[i] );
     }
     cprintf("\r\n");
 
+    zero10( message );
+    for( i=0; i < 10; ++i ) {
+        cprintf("%d,", message[i] );
+    }
+    cprintf("\r\n");
+
+    filler( 10, 5, message );
+
+    for( i=0; i < 10; ++i ) {
+        cprintf("%d,", message[i] );
+    }
+    cprintf("\r\n");
 
     while(1){
     }

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#include <peekpoke.h>
 
 void init_dlist(void);
 extern uint8_t screen_memory[4080];
@@ -182,11 +183,12 @@ void draw_xship( ) {
 }
 
 
+#define VERT_SCROLL_MAX 8
 
 int main(void)
 {
     uint8_t i,j,count,type;
-    uint8_t tick = 0;
+    uint8_t tick, vert_scroll = 0;
     uint16_t scroll_pos = 0;
     uint16_t addr = (uint16_t)(charset);
 
@@ -244,10 +246,19 @@ int main(void)
     while(1) {
         sleep(1);
         if( scroll_pos < 2640 ) {
-            scroll_pos += 40;
-            screen_scroll = (uint16_t) (screen_memory + scroll_pos);    
-            dlist_scroll_address[0] = (uint8_t)(screen_scroll&0xFF);
-            dlist_scroll_address[1] = (uint8_t)(screen_scroll >> 8);
+            vert_scroll += 1;
+            // if we're at max fine vert scroll, reset fine to 0 and do a coarse scroll
+            if( vert_scroll == VERT_SCROLL_MAX ) {
+                vert_scroll = 0;
+                scroll_pos += 40;
+                screen_scroll = (uint16_t) (screen_memory + scroll_pos);    
+                dlist_scroll_address[0] = (uint8_t)(screen_scroll&0xFF);
+                dlist_scroll_address[1] = (uint8_t)(screen_scroll >> 8);
+            }
+
+            // store/poke current fine scroll value into 0xd405
+            //POKE( 0xD405, vert_scroll );
+            *(uint8_t*)(0xD405) = vert_scroll;
         }
 
     }

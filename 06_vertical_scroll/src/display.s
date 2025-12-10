@@ -34,11 +34,11 @@ main_dlist:
         .word text_memory            ; memory address 2 bytes
         .byte $02                    ; total of 24 lines.
 
-        .byte $44                    ; LMS + sets ANTIC 4
+        .byte $64                    ; LMS + sets ANTIC 4
 _dlist_scroll_address:               ; LABEL THE ADDRESS OF SCREEN MEMORY SO WE CAN UPDATE IT LATER.
         .word screen_memory          ; gives address of start of screen memory. ( DL and DL+1)
         .repeat 23
-            .byte $04                ; total of 24 lines.
+            .byte $24                ; total of 24 lines.
         .endrepeat
 
         .byte $41

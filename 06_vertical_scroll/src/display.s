@@ -5,7 +5,7 @@
 .include "atari.inc"
 
 
-.export _init_dlist, _text_memory, _screen_memory, _main_dlist
+.export _init_dlist, _text_memory, _screen_memory, _dlist_scroll_address
 
 
 
@@ -25,8 +25,9 @@ _screen_memory = screen_memory
 
         .segment "DLIST"
 .align 1024
-;  just a single ANTIC 5 screen
-_main_dlist:
+
+;  a couple of GR.0 lines followed by Antic 4
+main_dlist:
         .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"
 
         .byte $42                    ; LMS + sets ANTIC 4
@@ -34,13 +35,14 @@ _main_dlist:
         .byte $02                    ; total of 24 lines.
 
         .byte $44                    ; LMS + sets ANTIC 4
+_dlist_scroll_address:               ; LABEL THE ADDRESS OF SCREEN MEMORY SO WE CAN UPDATE IT LATER.
         .word screen_memory          ; gives address of start of screen memory. ( DL and DL+1)
         .repeat 23
             .byte $04                ; total of 24 lines.
         .endrepeat
 
         .byte $41
-        .word _main_dlist             ; JVB ( vertical blank jump to start of display list
+        .word main_dlist             ; JVB ( vertical blank jump to start of display list
 
 
 ; ------------------------------------------------------------
@@ -52,9 +54,9 @@ _main_dlist:
 
     lda #0                                       ; stop the dma
     sta DMACTL
-    lda #<_main_dlist                             ; install the new display list
+    lda #<main_dlist                             ; install the new display list
     sta SDLSTL
-    lda #>_main_dlist
+    lda #>main_dlist
     sta SDLSTH
     lda #$22                                     ; resume the DMA
     sta DMACTL

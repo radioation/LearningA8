@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h>
 
 void init_dlist(void);
 extern uint8_t screen_memory[4080];
 extern uint8_t text_memory[80];
+extern uint8_t dlist_scroll_address[2];
+
 
 #pragma rodata-name( push, "CHARSET")
 const unsigned char charset[] = {
@@ -183,8 +186,11 @@ void draw_xship( ) {
 int main(void)
 {
     uint8_t i,j,count,type;
-    uint8_t scroll_pos = 0;
+    uint8_t tick = 0;
+    uint16_t scroll_pos = 0;
     uint16_t addr = (uint16_t)(charset);
+
+    uint16_t screen_scroll;
 
     memset( text_memory, 0, 80 ); 
     memset( screen_memory, 0, 3520 ); // 4*22*40   (88 lines)
@@ -234,9 +240,16 @@ int main(void)
     OS.chbas = addr >> 8;
     init_dlist();
 
-
-    while(1) {
     
+    while(1) {
+        sleep(1);
+        if( scroll_pos < 2640 ) {
+            scroll_pos += 40;
+            screen_scroll = (uint16_t) (screen_memory + scroll_pos);    
+            dlist_scroll_address[0] = (uint8_t)(screen_scroll&0xFF);
+            dlist_scroll_address[1] = (uint8_t)(screen_scroll >> 8);
+        }
+
     }
 
 }

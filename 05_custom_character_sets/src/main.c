@@ -2,7 +2,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#pragma data-name( push, "MYCHAR")
+void init_dlist(void);
+extern uint8_t screen_memory[];
+
+#pragma rodata-name( push, "CHARSET")
 const unsigned char charset[] = {
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 	0x01,0x06,0x19,0x15,0x66,0x69,0x9E,0x6B, // 1 rock ul
@@ -134,20 +137,43 @@ const unsigned char charset[] = {
 	0x10,0x18,0x1C,0x1E,0x1C,0x18,0x10,0x00
 };
 
-#pragma data-name( pop )
+#pragma rodata-name( pop )
 
 
 
 int main(void)
 {
-    uint16_t addr = (uint16_t)charset;
+    uint16_t addr = (uint16_t)(charset);
 
-    memcpy( screen_memory, tile_data, sizeof( tile_data ) );
-    set_colors();
+    memset( screen_memory, 0, 1024 );
+    screen_memory[80] = 1;
+    screen_memory[81] = 2;
+    screen_memory[120] = 3;
+    screen_memory[121] = 4;
 
-  //setcolor(2, HUE_REDORANGE, 4);
+    screen_memory[180] = 0x86; 
+    screen_memory[181] = 0x87;
+    screen_memory[220] = 0x85;
+
+    screen_memory[290] = 0x88; 
+    screen_memory[291] = 0x89;
+    screen_memory[310] = 0x8A;
+
+    screen_memory[460] = 0x8B; 
+    screen_memory[419] = 0x8C; 
+    screen_memory[421] = 0x8D; 
+    screen_memory[499] = 0x8E; 
+    screen_memory[501] = 0x8F; 
+    // set_colors();
+
+    _setcolor(0, 0, 12);
+    _setcolor(1, 0, 8);
+    _setcolor(2, 0, 4);
+    _setcolor(3, 2, 10);
  
     OS.chbas = addr >> 8;
+    init_dlist();
+
 
     while(1) {
     }

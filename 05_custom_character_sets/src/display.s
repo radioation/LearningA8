@@ -28,8 +28,9 @@ main_dlist:
         .byte $42                    ; LMS + sets ANTIC 2
         .word screen_memory          ; gives address of start of screen memory. ( DL and DL+1)
 
-        .repeat 13
-            .byte $04                ; total of 12 lines
+        .byte $02                    ; second GR.0 line
+        .repeat 22
+            .byte $04                ; total of 24 lines.
         .endrepeat
 
         .byte $41

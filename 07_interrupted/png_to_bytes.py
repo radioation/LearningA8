@@ -16,12 +16,14 @@ def main(args, loglevel):
         logging.info( f'Image w:{width} h:{height}' )
        
         px = img.load()
-        outfile.write( f'const unsigned char {args.data_name}[] = {{\n' )
+        outfile.write( f'_{args.data_name}:\n')
         for y in range(0, height ):
-            for x in range(0, width ):
-                outfile.write(f' {px[x,y]},' )
+            outfile.write(" .byte ")
+            for x in range(0, width, 4 ):
+                outfile.write(f'{px[x,y]*64+px[x+1,y]*16+px[x+2,y]*4+px[x+3,y]}' )
+                if x < width -4:
+                    outfile.write(',')
             outfile.write("\n")
-        outfile.write("};\n")
         
 
 
@@ -45,14 +47,14 @@ if __name__ == '__main__':
 
     parser.add_argument( "-o",
                         "--output_filename",
-                        default = 'img_data.c',
+                        default = 'img_data.s',
                         help = "Output filename",
                         metavar = "ARG")
 
     parser.add_argument( "-n",
                         "--data_name",
                         default = 'img_data',
-                        help = "Name of C array",
+                        help = "Name of memory",
                         metavar = "ARG")
 
     args = parser.parse_args()

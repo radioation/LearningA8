@@ -30,9 +30,9 @@ _screen_memory = screen_memory
 main_dlist:
         .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"
 
-        .byte $42                    ; LMS + sets ANTIC 4
+        .byte $42                    ; LMS + sets ANTIC 2
         .word text_memory            ; memory address 2 bytes
-        .byte $02                    ; total of 24 lines.
+        .byte $02                    ; second line of antic 2
 
         .byte $64                    ; LMS + sets ANTIC 4
 _dlist_scroll_address:               ; LABEL THE ADDRESS OF SCREEN MEMORY SO WE CAN UPDATE IT LATER.

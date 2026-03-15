@@ -11,8 +11,7 @@ and the [wiki](https://github.com/cc65/wiki/wiki/Parameter-passing-and-calling-c
 > called function. That is A in the case of an eight-bit value, A/X in the case
 > of a 16-bit value, and A/X/sreg in the case of a 32-bit value.
 
-*IMP* Contrary to most other C compilers, the callee (the called function) is
-responsible for cleaning up the stackm
+*IMP* The function being called is responsible for cleaning up the stack.
 
 
 This function prototype:

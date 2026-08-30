@@ -99,7 +99,8 @@ From COmpute's First Book of Atari Graphics and [Gury's](https://gury.atari8.inf
     `GTIA_WRITE.sizep2 = 0x01;`
 * `53259`: size of player 3 (0 = normal, 1 = double, 3 = quadruple)
     `GTIA_WRITE.sizep3 = 0x01;`
-
+* `53260 `: Size for all missiles set by bits. M0 bits (1,0), M1 bits (3,2), M2 bits (5,4), M3 bits(7,6)
+    `GTIA_WRITE.sizep3 = 0x01;`
 * `53277`: A 3 here enables player/missile graphics, a 0 disables them.
 
                            Decimal   Bit

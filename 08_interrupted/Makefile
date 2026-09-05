@@ -5,7 +5,7 @@ LD      := cl65
 
 # ---- project ----
 TARGET 		:= atari
-PROGRAM     := 07_interrupts
+PROGRAM     := 08_interrupts
 BUILD_DIR   := build
 OUT         := $(BUILD_DIR)/$(PROGRAM).xex
 

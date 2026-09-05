@@ -5,7 +5,7 @@ LD      := cl65
 
 # ---- project ----
 TARGET 		:= atari
-PROGRAM     := 09_sounds
+PROGRAM     := 10_sounds
 BUILD_DIR   := build
 OUT         := $(BUILD_DIR)/$(PROGRAM).xex
 

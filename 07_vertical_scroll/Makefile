@@ -5,7 +5,7 @@ LD      := cl65
 
 # ---- project ----
 TARGET 		:= atari
-PROGRAM     := 06_vertical_scroll
+PROGRAM     := 07_vertical_scroll
 BUILD_DIR   := build
 OUT         := $(BUILD_DIR)/$(PROGRAM).xex
 

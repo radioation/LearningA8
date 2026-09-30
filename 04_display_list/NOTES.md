@@ -50,3 +50,10 @@ main_dlist:
 
 
 
+From [atariwiki.org](https://atariwiki.org/wiki/Wiki.jsp?page=Display_list_instruction_table)
+* LMS is bit 6, so `.byte $47` is setting bit 6 ($40) plus antic 7 ($07)
+
+
+
+
+

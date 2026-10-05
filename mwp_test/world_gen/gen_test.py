@@ -7,7 +7,6 @@ chunk_data = []
 
 WORLD_SEED = 84384892817394821
 
-chunk_size =32
 
 
 # ===== Biome Levels =====
@@ -59,29 +58,36 @@ def print_world(world):
 def main( args ):
     print(f"world seed: {args.seed}")
 
+    x_chunks = int(args.width/args.chunk_size)
+    y_chunks = int(args.height/args.chunk_size)
+    print(f'x chunks: {x_chunks} y chunks: {y_chunks}')
+
     noise_generator = PerlinNoise(octaves=4, seed=args.seed)
-    chunk_data = []
 
     # these should eventually be params, just start 0,0 chunk for testing.
     chunk_x = 0;
     chunk_y = 0;
 
     # C
-    start_x = chunk_x * chunk_size
-    start_y = chunk_y * chunk_size
-
-    for y in range(chunk_size):
-        row = []
-        for x in range(chunk_size):
-            # Absolute world coordinates passed to the generator
-            world_x = (start_x + x) / args.scale
-            world_y = (start_y + y) / args.scale
-
-            value = get_biome(noise_generator([world_x, world_y]))
-            row.append(value)
-        chunk_data.append(row)
-        print(row)
-
+    for chunk_y in range( y_chunks ):
+        for chunk_x in range( x_chunks ):
+            start_x = chunk_x * args.chunk_size
+            start_y = chunk_y * args.chunk_size
+            chunk_data = []
+            print(f'start x: {start_x} y: {start_y}') 
+            for y in range(args.chunk_size):
+                row = []
+                for x in range(args.chunk_size):
+                    # Absolute world coordinates passed to the generator
+                    world_x = (start_x + x) / args.scale
+                    world_y = (start_y + y) / args.scale
+  
+                    value = get_biome(noise_generator([world_x, world_y]))
+                    row.append(value)
+                chunk_data.append(row)
+            print('---------------------------------------')
+            print_world(chunk_data)
+    
 
 
 
@@ -92,22 +98,27 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description = "Create worlds for A8 and MegaDrive",
         fromfile_prefix_chars = '@' )
-
     parser.add_argument( "-w",
         "--width",
-        default = 40,
+        default = 64,
         type=int,
-        help = "map width in tiles ",
+        help = "world map width in tiles ",
         metavar = "ARG")
 
     parser.add_argument( "-H",
         "--height",
-        default = 20,
+        default = 64,
         type=int,
-        help = "map height in tiles ",
+        help = "world map height in tiles ",
         metavar = "ARG") 
 
 
+    parser.add_argument( "-c",
+        "--chunk_size",
+        default = 32,
+        type=int,
+        help = "world chunk size",
+        metavar = "ARG")
 
 
     parser.add_argument( "-s",

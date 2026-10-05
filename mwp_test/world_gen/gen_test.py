@@ -22,11 +22,22 @@ def get_biome(value):
     else:
         return 'M'  # Mountain
 
+def get_tile_id(value):
+    if value < -0.10:
+        return 0  # Water
+    elif value < 0.0:
+        return 1 # Sand
+    elif value < 0.20:
+        return 2  # Grassland
+    elif value < 0.4:
+        return 3  # Hills
+    else:
+        return 4  # Mountain
 
-def print_world(world):
-    for row in world:
-        print(''.join(row))
-
+#def print_world(world):
+#    for row in world:
+#        print(''.join(row))
+#
 #def a8_world_row1( tile ):
 #    match tile:
 #        case '~': # Water
@@ -54,6 +65,20 @@ def print_world(world):
 #            return "12,13,"
 #
 
+def save_world( world, basename ) :
+    #print(world[0])
+    #print(world[1])
+    with open( basename + ".c", 'w') as ofile:
+        for chunk in world:
+            print(f'x: {chunk[0]} y: {chunk[1]}')
+            ofile.write(f'uint8_t chunk_{chunk[0]}_{chunk[1]}[] = {{\n')
+            for row in chunk[2]:
+                for col in row:
+                    ofile.write( f'{col}, ' )
+                ofile.write('\n')
+            ofile.write('\n|\n')
+
+        
 
 def main( args ):
     print(f"world seed: {args.seed}")
@@ -68,6 +93,7 @@ def main( args ):
     chunk_x = 0;
     chunk_y = 0;
 
+    world = []
     # C
     for chunk_y in range( y_chunks ):
         for chunk_x in range( x_chunks ):
@@ -82,11 +108,15 @@ def main( args ):
                     world_x = (start_x + x) / args.scale
                     world_y = (start_y + y) / args.scale
   
-                    value = get_biome(noise_generator([world_x, world_y]))
+                    value = get_tile_id(noise_generator([world_x, world_y]))
                     row.append(value)
                 chunk_data.append(row)
-            print('---------------------------------------')
-            print_world(chunk_data)
+            #print('---------------------------------------')
+            #print_world(chunk_data)
+            world.append( [ start_x, start_y, chunk_data] )
+
+    if len(args.base_filename) > 0:
+        save_world( world, args.base_filename );
     
 
 
@@ -144,6 +174,8 @@ if __name__ == '__main__':
         default = "outfile_",
         help = "base name for output files (will auto add A8, C64, MD as needed)",
         metavar = "ARG")
+
+
 
 
     args = parser.parse_args()

@@ -5,7 +5,7 @@ LD      := cl65
 
 # ---- project ----
 TARGET 		:= atari
-PROGRAM     := 10_mwp
+PROGRAM     := mwp_demo
 BUILD_DIR   := build
 OUT         := $(BUILD_DIR)/$(PROGRAM).xex
 

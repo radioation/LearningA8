@@ -6,7 +6,6 @@ from PIL import Image
 chunk_data = []
 
 WORLD_SEED = 84384892817394821
-noise_generator = PerlinNoise(octaves=4, seed=WORLD_SEED)
 
 chunk_size =32
 
@@ -60,6 +59,7 @@ def print_world(world):
 def main( args ):
     print(f"world seed: {args.seed}")
 
+    noise_generator = PerlinNoise(octaves=4, seed=args.seed)
     chunk_data = []
 
     # these should eventually be params, just start 0,0 chunk for testing.
@@ -77,7 +77,7 @@ def main( args ):
             world_x = (start_x + x) / args.scale
             world_y = (start_y + y) / args.scale
 
-            value = noise_generator([world_x, world_y])
+            value = get_biome(noise_generator([world_x, world_y]))
             row.append(value)
         chunk_data.append(row)
         print(row)

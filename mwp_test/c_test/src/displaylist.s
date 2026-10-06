@@ -146,67 +146,6 @@ dohdir:
     bmi vfine  ; $ff == fine scroll only
     jsr mwp
 
-;    ; read stick
-;    lda STICK0
-;   
-;    and #$02    ;down bit ( 1101 in https://atariwiki.org/wiki/Wiki.jsp?page=STICK0 )
-;    bne check_up    ; not DOWN bit, so check if stick is pushed UP
-;  
-;    lda finey       ; current fine scroll pos in y direction
-;    bne stick_down  ; have we fine scrolled down to 0? If not no need for MWP
-;    lda #8          ; reset fine scroll y pos
-;    sta finey       ; store it
-;    lda #0          ; use accumulator to pass dir to MWP ( comments says '0')
-;    jsr mwp         ; Do MWP update to screen memory
-;stick_down:
-;    dec finey   ; decrement fine scrolling position for y direction
-;
-;
-;check_up:
-;    lda STICK0
-;    and #$01    ; up bit ( 1110)
-;    bne check_right ; not UP bit, so check if stick is pushed RIGHT
-;  
-;    lda finey       ; current fine scroll pos in y dir
-;    cmp #7          ; have we fine scrolled 8 lines (0-7)
-;    bne stick_up    ; no, don't call MWP
-;    lda #$ff        ; 255? so that next inc will roll over to 0?
-;    sta finey
-;    lda #1          ; use accumulator to pass direction to MWP ( comments says '1')
-;    jsr mwp         ; Do MWP update to screen memory.
-;stick_up:
-;    inc finey   ; increment file scrolling position for y direction
-;
-;
-;check_right:
-;    lda STICK0
-;    and #$08    ; right bit ( 0111  )
-;    bne check_left  ; not RIGHT bit, so check if stick is pushed LEFT
-;  
-;    lda finex       ; current fine scroll position in X direction
-;    cmp #7          ; have we fine scrolled 8 cols (0-7)
-;    bne stick_right ; NO, don't call MWP
-;    lda #$ff        ; 255, so next increment will roll over to 0?
-;    sta finex
-;    lda #3          ; use accumulator to pass direction to MWP ( comments says '2 - right'?)
-;    jsr mwp         ; Do MWP update to screen memory
-;stick_right:
-;    inc finex   ; increment fine scrolling  pos for x dir
-;
-;
-;check_left:
-;    lda STICK0
-;     and #$04    ;left bit (1011 )
-;     bne vdone       ; nope, no more directions to try so we're done
-;   
-;           lda finex   ; current fine scroll position in X direction
-;     bne stick_left  ; have we fine-scrolled left to 0? if not no need for mwp call
-;     lda #8          ; reset fine scroll X position
-;     sta finex
-;     lda #2           ; use accumulator to pass direction to MWP (comments says '3 - left'?)
-;     jsr mwp          ; do MWP udpate to screen memory
-;stick_left:
-;    dec finex  ;decrement fine scrolling pos for y dir
 
 vfine:
     lda _pend_finex   ; update fine scroll registers

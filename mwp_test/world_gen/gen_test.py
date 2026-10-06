@@ -69,6 +69,7 @@ def save_world( world, basename ) :
     #print(world[0])
     #print(world[1])
     with open( basename + ".c", 'w') as ofile:
+        ofile.write("#include <stdint.h>\n\n")
         for chunk in world:
             print(f'x: {chunk[0]} y: {chunk[1]}')
             ofile.write(f'uint8_t chunk_{chunk[0]}_{chunk[1]}[] = {{\n')
@@ -76,7 +77,7 @@ def save_world( world, basename ) :
                 for col in row:
                     ofile.write( f'{col}, ' )
                 ofile.write('\n')
-            ofile.write('\n|\n')
+            ofile.write('\n};\n')
 
         
 

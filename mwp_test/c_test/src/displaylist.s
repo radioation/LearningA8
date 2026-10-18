@@ -4,7 +4,7 @@
 .include "atari.inc"
 
 
-.export _init_dlist, _sline0, _screen_memory, _message_memory, _horz_scroll, _init_interrupts,  _tdir, _mwpy, _mwpx, _finex, _finey, _main_dlist, _lms1, _pend_vdir, _pend_hdir, _pend_finex, _pend_finey, _commit, _mwp
+.export _init_dlist, _sline0, _screen_memory, _message_memory, _horz_scroll, _init_interrupts,  _tdir, _mwpy, _mwpx, _finex, _finey, _main_dlist, _lms1, _pend_vdir, _pend_hdir, _pend_finex, _pend_finey, _commit, _mwp, _mwp_toplo, _mwp_tophi
 
 
     .segment "BSS"
@@ -86,7 +86,7 @@ lms1:   .byte 64 + $34             ; LMS  64 +  HSCROLL + VSCRLL + ANTIC 4 line
         .endrepeat
         
         .byte 64 + $14             ; LMS  64 +  HSCROLL + VSCRLL + ANTIC 4 line
-        .word screen_memory        ; gives address of start of screen memory. ( DL and DL+1)
+        .word sline0               ; gives address of start of screen memory. ( DL and DL+1)
 
         .byte $41                    
         .word main_dlist             ; JVB ( vertical blank jump to start of display list
@@ -120,6 +120,10 @@ _lms1 =lms1
 .proc _init_interrupts
         lda #0
         sta _commit
+        sta _finex
+        sta _finey
+        sta _pend_finex
+        sta _pend_finey
         lda #$FF
         sta _pend_vdir
         sta _pend_hdir
@@ -178,8 +182,8 @@ mwp_right:
         lda mwpx   ; current MWP X pos? Original comments says between 0-48
         bne mwp_r1 ; Branch not equal (if zer0 flag is clear, branch and skip the LMS erase call)
 
-        lda #48    ;  We're HERE because mwpx == zero, so wrap around to
-                   ;  48 ( and will decremnt, so effectively 47 )
+        lda #47    ;  We're HERE because mwpx == zero, so wrap around 
+              
         sta mwpx   ; save it
         lda #0     ; sets dir to down
         sta tdir   ; LMS? tdir tells it which way to go (0 down)
@@ -192,7 +196,7 @@ mwp_r1:
 
 mwp_left:
         lda mwpx  ; current MWP X position (between 0 and 23 ).
-        cmp #48   ; EDGE is 48,
+        cmp #47   ; EDGE is 48,
         beq mwp_l1 ; are we equal to 48 (at the edge)? If so we want to wrap around to 0 and need to update LMS2
 
         inc mwpx    ; less than 48, increment.
@@ -216,7 +220,7 @@ mwp_erase:
         lda #$34           ; erase old LMS by removing '64' from entry ( bits 4 and 5 ($30) are HSCROLL AND VSCROLL. $04 is GR1/Antic 4 )
         sta lms1+3,x       ;  lms1 is location of top LMS in DLIST. LMS+3/4/5 + X is the LMS2/LMS-bottom's current location.
                            ;  clear 2nd LMS:   lms1 *plus* hard coded 3, plus X ( +3 is a second lms)
-        sta lms1+4,x       ;  clear LMS2/LMS-bottom address byte low: lms1  *plus* hard coded 4, plus X ( +4 isl-byte of 2nd lms)
+        sta lms1+4,x       ;  clear LMS2/LMS-bottom address low-byte: lms1  *plus* hard coded 4, plus X ( +4 isl-byte of 2nd lms)
 
 
         cpx #18            ; is BOTTOM LS at 18
@@ -227,7 +231,7 @@ mwp_erase:
                            ; 'popping'  (gets rid of VSCROLL bit but preseves HSCROLL)
 
 mwp_e1:
-        sta lms1+5,x       ; clear LMS2/LMS-bottom  address byte hight: lms1 *plus* hard coded 5, plus X ( +5 is h-byte of 2nd lms) may or may not preserve VSCROLL.
+        sta lms1+5,x       ; clear LMS2/LMS-bottom  address high-byte: lms1 *plus* hard coded 5, plus X ( +5 is h-byte of 2nd lms) may or may not preserve VSCROLL.
      ; -- end actual erasure ----------------------------
 
 
@@ -265,7 +269,7 @@ mwp_lms:
         sta lms1+4,x    ;  SET  LMS2/LMS-bottom address byte low: lms1  *plus* hard coded 4, plus X ( +4 isl-byte of 2nd lms), mwpx lets LMS2/LMS-BOTTOM
                         ; point at different columns in a given row of screen memory.
 
-        lda #>sline0    ; high byte of screen memory (currently defined as $4400. sline0 is top line, screen is second line of reserved memory
+        lda #>sline0    ; high byte of screen memory (currently defined as $7000. sline0 is top line, screen is firstline of reserved memory
         adc #0          ; add curent state of carry flag to accumulator?
         sta lms1+5,x    ;  Set  LMS2/LMS-bottom High byte to sline0 (+ carry if carry actually occured, even though comment says overflow won't happen)
 
@@ -306,6 +310,8 @@ mwp_toplo:
     .endrepeat
     .byte $00
 
+_mwp_toplo = mwp_toplo
+
 ; TOP LMS high byte
 mwp_tophi:
     .repeat 20, I
@@ -313,9 +319,14 @@ mwp_tophi:
     .endrepeat
     .byte > ( sline0 )
 
+_mwp_tophi = mwp_tophi
+
 ; ENTRY/INDEX-INTO DISPLAY LIST for bottom LMS  by Y? if Y =1, the row we want to wrap is the bottom (18)
 mwp_idx:
 ; relative to top/LMS which we don't move from that position.
+; max is 18 because `lms1+3` bakes in an offset of 1 already 
+; because ->  lms1 byte is +0, lms1 lo addr is +1, lms1 hi addr is +2,  +3 is the next dlist line 
+
        .byte 18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,0
 
 ; screen memory offset for bottom LMS, only matters once. COuld we turn off 

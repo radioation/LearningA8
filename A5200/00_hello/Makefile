@@ -1,5 +1,5 @@
 # Define the target system for cc65
-TARGET = atari
+TARGET = atari5200
 
 # Source files
 SRC_NAME = main.c

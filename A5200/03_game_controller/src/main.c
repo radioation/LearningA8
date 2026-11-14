@@ -2,7 +2,8 @@
 #include <stdint.h>
 #include <conio.h>
 
-
+// star raiders used 11 IIRC
+#define POT_SHADOW ((volatile uint8_t*)0x0011)
 
 
 // Lookup table for 5200 keypad codes: index = (kbcode >> 1) & 0x0F
@@ -50,10 +51,15 @@ int main(void)
     //    POKEY_WRITE.potgo = 0;
      wait_vblank();
 
-        pot0 = POKEY_READ.pot0;
-        pot1 = POKEY_READ.pot1;
-        pot2 = POKEY_READ.pot2;
-        pot3 = POKEY_READ.pot3;
+      //  pot0 = POKEY_READ.pot0;
+      //  pot1 = POKEY_READ.pot1;
+      //  pot2 = POKEY_READ.pot2;
+      //  pot3 = POKEY_READ.pot3;
+
+        pot0 = POT_SHADOW[0];
+        pot1 = POT_SHADOW[1];
+        pot2 = POT_SHADOW[2];
+        pot3 = POT_SHADOW[3];
 
  // triggers Read bottom fire buttons (0 = pressed)
         trig0 = GTIA_READ.trig0;
@@ -61,7 +67,11 @@ int main(void)
 
     // alternate keypad reads
     if ( (tick &1) == 0 ) {
+            top0 = !(POKEY_READ.skstat & 0x08);
+        GTIA_WRITE.consol = 0x04 | 0x01; // port 2 will be next
     } else {
+            top1 = !(POKEY_READ.skstat & 0x08);
+        GTIA_WRITE.consol = 0x04 | 0x00;  // port 1 will be next
     } 
     tick +=1;
 

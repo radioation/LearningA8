@@ -61,13 +61,7 @@ int main(void)
 
     // alternate keypad reads
     if ( (tick &1) == 0 ) {
-        top0 = !(POKEY_READ.skstat & 0x08);
-        key0 = !(POKEY_READ.skstat & 0x04) ? KEYMAP[(POKEY_READ.kbcode >> 1) & 0x0F] : '-';
-        GTIA_WRITE.consol = 0x04 | 0x01; // Select Port 2 (index 1) + Pot power
     } else {
-        top1 = !(POKEY_READ.skstat & 0x08);
-        key1 = !(POKEY_READ.skstat & 0x04) ? KEYMAP[(POKEY_READ.kbcode >> 1) & 0x0F] : '-';
-        GTIA_WRITE.consol = 0x04 | 0x00; // Select Port 1 (index 0) + Pot power
     } 
     tick +=1;
 

@@ -18,7 +18,7 @@ void main() {
 
     // https://cc65.github.io/doc/funcref.html#ss3.155
     //   Move the text mode cursor to a new position.
-    gotoxy(10,1);
+    gotoxy(4,1);  // note that 5200 use ANTIC6/GR.1 FOR TEXT
 
     // https://cc65.github.io/doc/funcref.html#cputs
     //   Output a string directly to the console

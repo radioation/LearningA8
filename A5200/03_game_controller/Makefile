@@ -7,7 +7,7 @@ LD      := cl65
 TARGET 		:= atari5200
 PROGRAM     := 03_gamectrl
 BUILD_DIR   := build
-OUT         := $(BUILD_DIR)/$(PROGRAM).xex
+OUT         := $(BUILD_DIR)/$(PROGRAM).rom
 
 
 #CFG			:= atari-xex.cfg

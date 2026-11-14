@@ -3,12 +3,15 @@
 #include <conio.h>
 
 
-#define STRIG0_ADDR 644
-#define STRIG1_ADDR 645
 
 
-#define CH_ADDR     764
-
+// Lookup table for 5200 keypad codes: index = (kbcode >> 1) & 0x0F
+const char KEYMAP[16] = {
+    '?', '#', '0', '*',   // 0x00 - 0x03
+    'R', '9', '8', '7',   // 0x04 - 0x07 (R = Reset)
+    'P', '6', '5', '4',   // 0x08 - 0x0B (P = Pause)
+    'S', '3', '2', '1'    // 0x0C - 0x0F (S = Start)
+};
 
 void wait_frames(uint8_t f) {
     uint8_t i;
@@ -29,6 +32,8 @@ int main(void)
   uint8_t trig1;
   uint8_t top0;
   uint8_t top1;
+    char key0;
+    char key1;
 
   clrscr();
 
@@ -41,9 +46,9 @@ int main(void)
   cputs("5200 Controler Test");
 
   while (1) {
-    // pots
+    // potgo to start read?
         POKEY_WRITE.potgo = 0;
-        wait_frames(1); // Wait 1 frame for RC capacitors + keypad scan
+       wait_frames(1); // Wait 1 frame for RC capacitors + keypad scan
 
         pot0 = POKEY_READ.pot0;
         pot1 = POKEY_READ.pot1;
@@ -54,18 +59,29 @@ int main(void)
         trig0 = GTIA_READ.trig0;
         trig1 = GTIA_READ.trig1;
 
+        GTIA_WRITE.consol = 0x04 | 0x00; // Select Port 1 (index 0) + Pot power
+        wait_frames(1);
+        top0 = !(POKEY_READ.skstat & 0x08);
+        key0 = !(POKEY_READ.skstat & 0x04) ? KEYMAP[(POKEY_READ.kbcode >> 1) & 0x0F] : '-';
+
+        GTIA_WRITE.consol = 0x04 | 0x01; // Select Port 2 (index 1) + Pot power
+        wait_frames(1);
+        top1 = !(POKEY_READ.skstat & 0x08);
+        key1 = !(POKEY_READ.skstat & 0x04) ? KEYMAP[(POKEY_READ.kbcode >> 1) & 0x0F] : '-';
+
+
 
         // Display controller 1
         gotoxy(0, 3);
         cprintf("P1 X:%3u Y:%3u", pot0, pot1);
         gotoxy(0, 4);
-        cprintf("   B:%c T:%c ", trig0 ? '-' : '1', top0 ? '1' : '-');
+        cprintf("   B:%c T:%c KEY:%c", trig0 ? '-' : '1', top0 ? '1' : '-', key0);
         
         // Display controler 2
         gotoxy(0, 7);
         cprintf("P2 X:%3u Y:%3u", pot2, pot3);
         gotoxy(0, 8);
-        cprintf("   B:%c T:%c KEY:%c", trig1 ? '-' : '1', top1 ? '1' : '-');
+    cprintf("   B:%c T:%c KEY:%c", trig1 ? '-' : '1', top1 ? '1' : '-', key1);
 
 
 

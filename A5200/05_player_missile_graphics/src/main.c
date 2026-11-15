@@ -1,28 +1,14 @@
-#include <atari.h>
+#include <atari5200.h>
+#include <conio.h>
 #include <string.h>
 #include <stdint.h>
 
-
-#pragma data-name( push, "MYPMG" )
+#pragma bss-name (push, "MYPMG")
 unsigned char pmg_memory[ 2048 ]; // Double line resolution only needs 1024 bytes, single need 2048
-#pragma data-name( pop );
-
+#pragma bss-name (pop)
 
 // player data from https://bocianu.gitlab.io/spred/
 const unsigned char height = 0x0e;
-
-/*
-   unsigned char colors0_0[0x0e] = {
-   0x08
-   };unsigned char colors1_0[0x0e] = {
-   0x32
-   };unsigned char colors2_0[0x0e] = {
-   0x08
-   };unsigned char colors3_0[0x0e] = {
-   0x32
-   };
-*/
-
 //player 0
 const unsigned char player0_0[0x0e] = {
     0x00, 0x01, 0x01, 0x03, 0x02, 0x03, 0x03, 0x03, 0x06, 0x0d, 0x1a, 0x3a, 0x38, 0x08
@@ -53,11 +39,14 @@ const unsigned char mplayer[] = { 0x99, 0xbd, 0xff, 0xbd, 0x99  };
 
 int main(void)
 {
+    
     ///////////////////////////////////////////////////
     // INITIALIZE PMG /////////////////////////////////
   
     // pmg address handled by linker.
     uint16_t p = (uint16_t) &pmg_memory;
+
+    
     // set pmbase page with ANTIC
     ANTIC.pmbase = p >> 8; // >> for page
     memset( pmg_memory, 0, sizeof(pmg_memory) );
@@ -78,7 +67,7 @@ int main(void)
 
 
     OS.color2 = 0x0;
-    OS.color3 = 0x2A;
+    OS.color3 = 0x2A; // 5th player/combied-missiles color
     //OS.color4 = 0x0F;
     OS.pcolr0= 0x08;
     OS.pcolr1= 0x32;
@@ -86,7 +75,8 @@ int main(void)
     OS.pcolr3= 0x32;
 
     // priority
-    OS.gprior = 49; // 32 overlap has color, 1 players over playfield, 16 combine
+    // OS.gprior = 49; // 32 overlap has color, 1 players over playfield, 16 combine
+    GTIA_WRITE.prior = 49; // no shadow register for the OS?
 
     
     // horizontal positions

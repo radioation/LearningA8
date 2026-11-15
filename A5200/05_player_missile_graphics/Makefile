@@ -9,8 +9,7 @@ PROGRAM     := 05_player_missile
 BUILD_DIR   := build
 OUT         := $(BUILD_DIR)/$(PROGRAM).rom
 
-
-
+CFG                   := atari5200.cfg
 
 # ---- sources ----
 C_SRCS  := $(wildcard src/*.c)
@@ -30,7 +29,7 @@ INCLUDES := -I src -I include
 # -t atari selects platform (libs/headers/startup). Change as needed: c64, apple2, etc.
 CFLAGS   := -t $(TARGET) -Oirs $(INCLUDES) --add-source
 ASFLAGS  := -t $(TARGET) $(INCLUDES)
-LDFLAGS  := -t $(TARGET)  -m $(BUILD_DIR)/$(PROGRAM).map \
+LDFLAGS  := -t $(TARGET) -C $(CFG)  -m $(BUILD_DIR)/$(PROGRAM).map \
             -Ln $(BUILD_DIR)/$(PROGRAM).lbl
 
 # Optional: define symbols for both C and assembly

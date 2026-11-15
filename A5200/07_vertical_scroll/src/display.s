@@ -24,7 +24,6 @@ screen_memory:
 _screen_memory = screen_memory
 
         .segment "DLIST"
-.align 1024
 
 ;  a couple of GR.0 lines followed by Antic 4
 main_dlist:

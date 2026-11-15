@@ -20,7 +20,6 @@ screen_memory:
 _screen_memory = screen_memory
 
         .segment "DLIST"
-.align 1024
 ;  just a single ANTIC 5 screen
 main_dlist:
         .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"

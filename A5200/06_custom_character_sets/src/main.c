@@ -1,4 +1,4 @@
-#include <atari.h>
+#include <atari5200.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -166,12 +166,18 @@ int main(void)
     screen_memory[501] = 0x8F; 
     // set_colors();
 
-    _setcolor(0, 0, 12);
-    _setcolor(1, 0, 8);
-    _setcolor(2, 0, 4);
-    _setcolor(3, 2, 10);
+//    _setcolor(0, 0, 12);
+//    _setcolor(1, 0, 8);
+//    _setcolor(2, 0, 4);
+//    _setcolor(3, 2, 10);
+
+OS.color0 = (0 << 4) | 12; // 0x0C (Playfield color 0)
+OS.color1 = (0 << 4) | 8;  // 0x08 (Playfield color 1)
+OS.color2 = (0 << 4) | 4;  // 0x04 (Playfield color 2)
+OS.color3 = (2 << 4) | 10; // 0x2A (Playfield color 3 - used when bit 7 is set in ANTIC 4!)
+OS.color4 = 0x00;          // Background color
  
-    OS.chbas = addr >> 8;
+    ANTIC.chbase = addr >> 8;
     init_dlist();
 
 

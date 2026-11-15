@@ -27,7 +27,10 @@ static const unsigned char display_list[] = {
 
     // LMS: 64+7 sets ANTIC mode 7 / GR.2
     DL_LMS( DL_CHR20x16x2 ),
-    SCREEN_MEMORY0,      // address of start of screen memory
+    //SCREEN_MEMORY0,      // address of start of screen memory
+
+    (unsigned char)(SCREEN_MEMORY0 & 0xFF),
+    (unsigned char)(SCREEN_MEMORY0 >> 8),
     DL_CHR20x16x2,      // Sets ANTIC 7 for second mode line (equiv. of GR.2 )
 
     // 101 of ANTICF (GR.8) lines: 40bytes/line * 10 lines = 4040  to 4k boundary
@@ -55,8 +58,9 @@ static const unsigned char display_list[] = {
 
     // 4K boundary jump
     DL_LMS( DL_MAP320x1x1 ), // LMS and address for 4K boundary jump.
-    SCREEN_MEMORY1,      // includes one line ofi ANTIC 15/F GR.8
-
+//    SCREEN_MEMORY1,      // includes one line ofi ANTIC 15/F GR.8
+    (unsigned char)(SCREEN_MEMORY1 & 0xFF),
+    (unsigned char)(SCREEN_MEMORY1 >> 8),
     DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1,
     DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1,
     DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1, DL_MAP320x1x1,
@@ -103,25 +107,25 @@ void draw_rect( unsigned char x, unsigned char y ) {
 void main(void) {
     char msg1[] = "ATARI";   // used #include <atari_screen_charmap.h>
     char msg2[] = "IS FUN";
-    uint16_t dl_addr = (uint8_t) ram_dlist;
+    uint16_t dl_addr = (uint16_t) ram_dlist;
 
-    memset((void *)SCREEN_MEMORY0, 0, 4096 );
-    memset((void *)SCREEN_MEMORY1, 0, 4096 );
+    memset((void *)SCREEN_MEMORY0, 0, 4080 );
+    memset((void *)SCREEN_MEMORY1, 0, 1200 );
   
     // copy ROM dlist to ram and set address.
     memcpy(ram_dlist, display_list, sizeof(display_list));
     ram_dlist[sizeof(display_list) - 2] = (unsigned char)(dl_addr & 0xFF);
     ram_dlist[sizeof(display_list) - 1] = (unsigned char)(dl_addr >> 8);
-    OS.sdlst = (void *)ram_dlist;
 
     OS.color0 = 0x0E; // Text color 0 brightest.
     OS.color1 = 0x0E; // GR.8 foreground luminance
     OS.color2 = 0x94; // GR.8 / background blue
     OS.color4 = 0x00; // Border black
+    OS.sdlst = ram_dlist;
 
     // copy text to screen memory
     memcpy((void*)(SCREEN_MEMORY0 + 27), msg1, strlen( msg1 ) );
-    memcpy((void*)(SCREEN_MEMORY1 + 27*40 + 27   ), msg2, 6 );
+    memcpy((void*)(SCREEN_MEMORY1 + 28*40 + 27   ), msg2, 6 );
 
     draw_rect( 5, 30 );
     draw_rect( 8, 40 );

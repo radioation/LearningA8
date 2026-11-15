@@ -18,10 +18,10 @@ extern uint8_t last_key;
 
 // Lookup table for 5200 keypad codes: index = (kbcode >> 1) & 0x0F
 const char KEYMAP[16] = {
-    '?', '#', '0', '*',   // 0x00 - 0x03
-    'R', '9', '8', '7',   // 0x04 - 0x07 (R = Reset)
-    'P', '6', '5', '4',   // 0x08 - 0x0B (P = Pause)
-    'S', '3', '2', '1'    // 0x0C - 0x0F (S = Start)
+    '0', '1', '2', '3', 
+    '4', '5', '6', '7',
+    '8', '9', '*', '#', 
+    'S', 'P', 'R', '-'  
 };
 
 void wait_vblank(void) {
@@ -76,6 +76,19 @@ init_keypad();
         //  A52: DON'T potgo to start read
         //    POKEY_WRITE.potgo = 0;
         wait_vblank();
+//        // alternate keypad reads
+        if ( (tick &1) == 0 ) {
+            top0 = !(POKEY_READ.skstat & 0x08);
+            key0 = KEYMAP[  last_key  & 0x0F];
+            last_key = 0xFF; // CLEAR IT OUT!!! 
+            GTIA_WRITE.consol = 0x04 | 0x01; // port 2 will be next
+        } else {
+            top1 = !(POKEY_READ.skstat & 0x08);
+            key1 = KEYMAP[  last_key  & 0x0F];
+            last_key = 0xFF; // CLEAR IT OUT!!! 
+            GTIA_WRITE.consol = 0x04 | 0x00;  // port 1 will be next
+        } 
+        tick++;
 
         //  pot0 = POKEY_READ.pot0;
         //  pot1 = POKEY_READ.pot1;
@@ -91,22 +104,6 @@ init_keypad();
         trig0 = GTIA_READ.trig0;
         trig1 = GTIA_READ.trig1;
 
-//        // alternate keypad reads
-//        if ( (tick &1) == 0 ) {
-            top0 = !(POKEY_READ.skstat & 0x08);
-            key0 = last_key;
-
-//            if ( ! (POKEY_READ.skstat & 0x04) )  {
-//                key0 = KEYMAP[ ( POKEY_READ.kbcode >> 1 ) & 0x0F ];
-//            } 
-//
-//
-//            GTIA_WRITE.consol = 0x04 | 0x01; // port 2 will be next
-//        } else {
-//            top1 = !(POKEY_READ.skstat & 0x08);
-//            GTIA_WRITE.consol = 0x04 | 0x00;  // port 1 will be next
-//        } 
-        tick +=1;
 
 
         // Display controller 1

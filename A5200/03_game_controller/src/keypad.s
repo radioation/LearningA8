@@ -20,9 +20,9 @@ _last_key = last_key
 ; ------------------------------------------------------------
 ; CODE: init routine called from C
 ; ------------------------------------------------------------
-.segment "CODE"
+     .segment "CODE"
 
-.proc _init_keypad:
+.proc _init_keypad
     sei          ; disable 
 
     lda #$FF     ; default to no key pressed 
@@ -50,9 +50,10 @@ _last_key = last_key
 
 
     rts
+.endproc
 
 ; BIOS jumps here via ($020A)  pushing A, X, Y and decoding key into A
-keypad_isr:
+.proc keypad_isr
     sta _last_key       ; Save decoded key ($00-$0E)
     pla                 ; pop out  Y, X, A 
     tay
@@ -60,4 +61,4 @@ keypad_isr:
     tax
     pla
     rti
-
+.endproc

@@ -7,6 +7,18 @@
 unsigned char pmg_memory[ 2048 ]; // Double line resolution only needs 1024 bytes, single need 2048
 #pragma bss-name (pop)
 
+// just to get rid of the boot up message, make the screen blank
+static unsigned char my_dl[] = {
+    DL_BLK8, DL_BLK8, DL_BLK8,
+
+    DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8,
+    DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8,
+    DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8,
+    DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8, DL_BLK8,
+
+    DL_JVB, 0x00, 0x00
+};
+
 // player data from https://bocianu.gitlab.io/spred/
 const unsigned char height = 0x0e;
 //player 0
@@ -39,14 +51,17 @@ const unsigned char mplayer[] = { 0x99, 0xbd, 0xff, 0xbd, 0x99  };
 
 int main(void)
 {
-    
-    ///////////////////////////////////////////////////
-    // INITIALIZE PMG /////////////////////////////////
-  
     // pmg address handled by linker.
+    uint16_t dl = (uint16_t) my_dl;
     uint16_t p = (uint16_t) &pmg_memory;
 
-    
+        my_dl[sizeof(my_dl) - 2] = dl & 0xFF;
+    my_dl[sizeof(my_dl) - 1] = dl >> 8;
+    OS.sdlst = my_dl;   
+
+ 
+    ///////////////////////////////////////////////////
+    // INITIALIZE PMG /////////////////////////////////
     // set pmbase page with ANTIC
     ANTIC.pmbase = p >> 8; // >> for page
     memset( pmg_memory, 0, sizeof(pmg_memory) );

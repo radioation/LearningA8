@@ -1,5 +1,6 @@
 #include <atari5200.h>
 #include <string.h>
+#include <stdint.h>
 
 #include <atari_screen_charmap.h>    // Pesky Atari mapping.
 
@@ -15,10 +16,10 @@
 
 
 // CONST in ROM
-static const unsigned char display_list = {
+static const unsigned char display_list[] = {
     // get mode info  at https://gury.atari8.info/refs/graphics_modes.php
     // get defines from https://github.com/cc65/cc65/blob/master/include/_antic.h
-
+    
     // Blank scan lines provide for "overscan"
     DL_BLK8,   // 112
     DL_BLK8,   // 112
@@ -69,7 +70,8 @@ static const unsigned char display_list = {
     DL_CHR20x8x2,
     DL_CHR20x8x2,
 
-    DL_JVB, DLIST_ADDR
+    DL_JVB, // DLIST_ADDR (no longer known at compile time. letting cc65 position ram_dlist
+    0, 0   // fill in later.
 };
 
 // RAM display list 
@@ -101,6 +103,7 @@ void draw_rect( unsigned char x, unsigned char y ) {
 void main(void) {
     char msg1[] = "ATARI";   // used #include <atari_screen_charmap.h>
     char msg2[] = "IS FUN";
+    uint16_t dl_addr = (uint8_t) ram_dlist;
 
     memset((void *)SCREEN_MEMORY0, 0, 4096 );
     memset((void *)SCREEN_MEMORY1, 0, 4096 );
@@ -111,8 +114,7 @@ void main(void) {
     ram_dlist[sizeof(display_list) - 1] = (unsigned char)(dl_addr >> 8);
     OS.sdlst = (void *)ram_dlist;
 
-    OS.chbas  = 0xF8; // Built-in 5200 ROM font at $F800
-    OS.color0 = 0x0E; // Text color 0 (bright white)
+    OS.color0 = 0x0E; // Text color 0 brightest.
     OS.color1 = 0x0E; // GR.8 foreground luminance
     OS.color2 = 0x94; // GR.8 / background blue
     OS.color4 = 0x00; // Border black

@@ -2,7 +2,7 @@
 ; attempthing to recreate  https://www.atarimagazines.com/vbook/displaylistssimplified.html
 
 .setcpu "6502"
-.include "atari.inc"
+.include "atari5200.inc"
 
 
 .export _init_dlist, _screen_memory

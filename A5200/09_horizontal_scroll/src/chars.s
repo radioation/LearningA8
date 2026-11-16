@@ -147,7 +147,7 @@ _charset:
 ; ------------------------------------------------------------
     .segment "CODE"
 
-COL_BAK = $00   ; e.g., Black (Hue 0, Lum 0)
+COL_BAK = $88   ; e.g., Black (Hue 0, Lum 0)
 COL_PF0 = $EC   
 COL_PF1 = $C6  
 COL_PF2 = $F8 

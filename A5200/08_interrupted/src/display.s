@@ -12,20 +12,27 @@
 ; ------------------------------------------------------------
         .segment "DLIST"
 
-;  a couple of GR.0 lines followed by Antic 4
+;  a couple of GR.0 lines followed by Antic E
 main_dlist:
-        .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"
-
+        .byte $70, $70               ;  (16 blank SCAN lines provide for "overscan"
+        .byte $F0                    ; 8 blank lines $70 + interrupt.
+ 
         .byte $42                    ; LMS + sets ANTIC 2 (GR.0)
         .word _text_memory            ; memory address 2 bytes
         .byte $02                    ; second line of ANTIC 2  ( 16 scanlines at this point )
 
+        ; 100 ANTIC E lines  here
         .byte $4e                    ; Second  LMS + sets ANTIC mode E
         .word _img_data          ; gives address of start of screen memory. ( DL and DL+1)
-        .repeat 99  
+        .repeat 22  
+            .byte $0e               
+        .endrepeat
+        .byte $8e                ; set interrupt $80 and mode E
+        .repeat 76  
             .byte $0e               
         .endrepeat
 
+        ; 76 ANTIC E lines total in this part 
         .byte $4e                 ; #rd LMS and address for 4K boundary
         .word _img_data2          ; gives address of start of screen memory. ( DL and DL+1)
         .repeat 75 
@@ -75,20 +82,22 @@ main_dlist:
    sta VVBLKD            
    lda #>vbi            ; set high byte of hander 
    sta VVBLKD+1       
-   lda #$40              ; renable VBI and dli
-   sta NMIEN 
 
-   lda #$F0                   ; SET INTERRUPT $80 and last  blank $70
-   sta main_dlist + 2         ; move to the line we want the DLI to fire
-
-   lda #$8e                   ; SET INTERRUPT $80 and last moed e $0e
-   sta main_dlist + 32        ; move to the line we want the DLI to fire
+;; NOT VALID FOR ROM BASED DISPLAY LIST (SET THE LINES IN main_dlist )
+;;   lda #$F0                   ; SET INTERRUPT $80 and last  blank $70
+;;   sta main_dlist + 2         ; move to the line we want the DLI to fire
+;;
+;;   lda #$8e                   ; SET INTERRUPT $80 and last moed e $0e
+;;   sta main_dlist + 32        ; move to the line we want the DLI to fire
 
 
    lda #<dli_1                 ; set address of the dli
    sta VDSLST
    lda #>dli_1
    sta VDSLST+1
+
+   lda #$40              ; renable VBI and dli
+   sta NMIEN 
    rts
 .endproc
 

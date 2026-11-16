@@ -10,18 +10,19 @@
 void init_dlist(void);
 void init_interrupts(void);
 extern uint8_t img_data[];
+extern uint8_t img_data_rom[];
 extern uint8_t text_memory[];
 
 
 
 int main(void)
 {
-    char msg[] = "Atari Computers!";
+    char msg[] = "Atari 5200!";
     uint8_t i,j,count,type;
 
     memset( text_memory, 0, 80 ); 
-    memcpy( text_memory + 52, msg, 16 );
-    
+    memcpy( text_memory + 55, msg, 16 );
+    memcpy( img_data, img_data_rom, 7040 );    
     
     init_dlist();
 

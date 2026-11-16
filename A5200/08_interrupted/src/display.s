@@ -4,7 +4,7 @@
 .include "atari5200.inc"
 
 .export _init_dlist, _init_interrupts
-.import _img_data, _img_data2,  _text_memory
+.import _img_data, _img_data2,  _text_memory, _img_data_rom
 
 
 ; ------------------------------------------------------------

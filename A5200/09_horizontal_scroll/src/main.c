@@ -1,4 +1,4 @@
-#include <atari.h>
+#include <atari5200.h>
 #include <string.h>
 #include <stdint.h>
 
@@ -24,6 +24,8 @@ int main(void)
     
     addr = (uint16_t) charset;
 
+    // erase everything
+    memset( screen_memory, 0, 256*24);
     // setup characterset and playfield
     memcpy( screen_memory+256*9, tile_data, sizeof( tile_data ) );
     for( i = 0; i < 256; ++i ) {
@@ -33,7 +35,8 @@ int main(void)
         screen_memory[ 4608 + i ] =  i%2 ? 129 : 1;
     }    
     set_colors();
-    OS.chbas = addr >> 8;
+    //OS.chbas = addr >> 8;
+    ANTIC.chbase = addr >> 8;
 
     // setup dlist
     delay_count = 2;
@@ -41,8 +44,8 @@ int main(void)
     init_dlist();
     horz_scroll = 0;
 
-    init_interrupts();
-    ANTIC.nmien = 0xc0;  // activate BOTH display list ($80) and vertical blank $(40) interrupts
+//    init_interrupts();
+//    ANTIC.nmien = 0xc0;  // activate BOTH display list ($80) and vertical blank $(40) interrupts
 
 
 

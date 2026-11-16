@@ -2,7 +2,7 @@
 ; attempthing to recreate  https://www.atarimagazines.com/vbook/displaylistssimplified.html
 
 .setcpu "6502"
-.include "atari.inc"
+.include "atari5200.inc"
 
 
 .export _init_dlist, _screen_memory, _coarse_scroll_right, _fine_scroll_right, _horz_scroll, _init_interrupts, _delay_count, _delay
@@ -36,6 +36,7 @@ screen_memory:
 
 _screen_memory = screen_memory
 
+        .segment "DLIST"
 main_dlist:
         .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"
 
@@ -107,18 +108,28 @@ fs_done:
 
 
 .proc _init_interrupts
-        lda #7                  ; Load A with 7 for Deferred VBI
-        ldx #>vbi               ; Load X with the high byte of the handler's address
-        ldy #<vbi               ; Load Y with the low byte of the handler's address
-        jsr SETVBV              ; Call the OS routine to install the vector
+;;        lda #7                  ; Load A with 7 for Deferred VBI
+;;        ldx #>vbi               ; Load X with the high byte of the handler's address
+;;        ldy #<vbi               ; Load Y with the low byte of the handler's address
+;;        jsr SETVBV              ; Call the OS routine to install the vector
 
-        lda #$D4                ; SET INTERRUPT $80, SCROLLING $10 and MODE $40 + 4 (antic 4)
-        sta main_dlist + 36     ; move to the line we want the DLI to fire
+   lda #$00              ; disable NMIs while updating VBI
+   sta NMIEN
+   lda #<vbi             ; set low byte of hander 
+   sta VVBLKD            
+   lda #>vbi            ; set high byte of hander 
+   sta VVBLKD+1       
+
+;        lda #$D4                ; SET INTERRUPT $80, SCROLLING $10 and MODE $40 + 4 (antic 4)
+;        sta main_dlist + 36     ; move to the line we want the DLI to fire
 
         lda #<dli               ; set address of the dli
         sta VDSLST
         lda #>dli
         sta VDSLST+1
+
+   lda #$40              ; renable VBI and dli
+   sta NMIEN 
 
     rts
 .endproc
@@ -132,7 +143,13 @@ fs_done:
         lda delay
         sta delay_count
 vbi_exit:
-        jmp XITVBV              ; alyways exit VBI through OS routiner
+    ;     jmp XITVBV              ; NOT ON 5200!
+    pla
+    tay
+    pla
+    tax
+    pla
+    rti
 
 
 .endproc

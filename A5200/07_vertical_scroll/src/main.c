@@ -5,11 +5,13 @@
 #include <unistd.h>
 #include <peekpoke.h>
 
-void init_dlist(void);
+// void init_dlist(void);
 extern uint8_t screen_memory[4080];
 extern uint8_t text_memory[80];
-extern uint8_t dlist_scroll_address[2];
+extern uint8_t display_list[36];
 
+// RAM display list 
+static unsigned char  ram_dlist[ sizeof(display_list)];
 
 #pragma rodata-name( push, "CHARSET")
 const unsigned char charset[] = {
@@ -190,12 +192,19 @@ int main(void)
     uint8_t i,j,count,type;
     uint8_t tick, vert_scroll = 0;
     uint16_t scroll_pos = 0;
-    uint16_t addr = (uint16_t)(charset);
+    uint16_t ch_addr = (uint16_t)(charset);
+    uint16_t dl_addr = (uint16_t)(ram_dlist);
 
     uint16_t screen_scroll;
 
     memset( text_memory, 0, 80 ); 
     memset( screen_memory, 0, 3520 ); // 4*22*40   (88 lines)
+    // copy ROM dlist to ram and set address.
+    memcpy(ram_dlist, display_list, sizeof(display_list));
+    ram_dlist[sizeof(display_list) - 2] = (unsigned char)(dl_addr & 0xFF);
+    ram_dlist[sizeof(display_list) - 1] = (unsigned char)(dl_addr >> 8);
+    //OS.sdlst = display_list; // ROM
+    OS.sdlst = ram_dlist;
 
 
     //screen_memory[220] = 0x85; shot
@@ -241,8 +250,8 @@ OS.color3 = (2 << 4) | 10; // 0x2A (Playfield color 3 - used when bit 7 is set i
 OS.color4 = 0x00;          // Background color
  
 
-    ANTIC.chbase = addr >> 8;
-    init_dlist();
+    ANTIC.chbase = ch_addr >> 8;
+    //init_dlist(); not needed.
 
     
     while(1) {
@@ -254,8 +263,8 @@ OS.color4 = 0x00;          // Background color
                 vert_scroll = 0;
                 scroll_pos += 40;
                 screen_scroll = (uint16_t) (screen_memory + scroll_pos);    
-                dlist_scroll_address[0] = (uint8_t)(screen_scroll&0xFF);
-                dlist_scroll_address[1] = (uint8_t)(screen_scroll >> 8);
+                ram_dlist[8] = (uint8_t)(screen_scroll&0xFF);
+                ram_dlist[9] = (uint8_t)(screen_scroll >> 8);
             }
 
             // store/poke current fine scroll value into 0xd405

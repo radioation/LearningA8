@@ -5,7 +5,7 @@
 .include "atari5200.inc"
 
 
-.export _init_dlist, _text_memory, _screen_memory, _dlist_scroll_address
+.export _init_dlist, _text_memory, _screen_memory, _dlist_scroll_address, _display_list
 
 
 
@@ -43,6 +43,7 @@ _dlist_scroll_address:               ; LABEL THE ADDRESS OF SCREEN MEMORY SO WE 
         .byte $41
         .word main_dlist             ; JVB ( vertical blank jump to start of display list
 
+_display_list = main_dlist
 
 ; ------------------------------------------------------------
 ; CODE: init routine called from C

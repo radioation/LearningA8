@@ -5,10 +5,15 @@
 .include "atari5200.inc"
 
 
-.export _init_dlist, _screen_memory, _coarse_scroll_right, _fine_scroll_right, _horz_scroll, _init_interrupts, _delay_count, _delay
+.export _rom_dlist, _ram_dlist, _init_dlist, _screen_memory, _coarse_scroll_right, _fine_scroll_right, _horz_scroll, _init_interrupts, _delay_count, _delay
 
 
     .segment "BSS"
+.align 256
+ram_dlist:
+   .res 78
+_ram_dlist = ram_dlist
+
 horz_scroll:
     .res(1)    ; store HSCROLL value
 _horz_scroll = horz_scroll 
@@ -21,6 +26,9 @@ _delay_count = delay_count
 delay:
     .res 1  
 _delay = delay
+
+
+
 
 
 HORZ_SCROLL_MAX = 4  ; will vary depending on antic mode
@@ -37,7 +45,7 @@ screen_memory:
 _screen_memory = screen_memory
 
         .segment "DLIST"
-main_dlist:
+rom_dlist:
         .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"
 
         .byte $54                    ; LMS + sets ANTIC 4
@@ -49,9 +57,12 @@ main_dlist:
         .endrepeat
 
         .byte $41                    
-        .word main_dlist             ; JVB ( vertical blank jump to start of display list
+        .word ram_dlist             ; JVB ( vertical blank jump to start of display list
 
-
+_rom_dlist = rom_dlist
+; 6 bytes + (23 * 3 bytes) + 3 bytes 
+; 6 bytes + (69  bytes) + 3 bytes
+;  78 bytes
 
 ; ------------------------------------------------------------
 ; CODE: init routine called from C
@@ -62,9 +73,9 @@ main_dlist:
 
     lda #0                                       ; stop DMA
     sta DMACTL
-    lda #<main_dlist                             ; install the new display list
+    lda #<ram_dlist                             ; install the new display list
     sta SDLSTL
-    lda #>main_dlist
+    lda #>ram_dlist
     sta SDLSTH
 
     lda #$22                                     ; resume DAM
@@ -80,7 +91,7 @@ main_dlist:
         ldy #10          ; 10 lines to modify
         ldx #34          ; 34th byte after start of display list is low byte of address 
 cs_loop:
-        inc main_dlist,x
+        inc ram_dlist,x
         inx             ; skip to next low byte which is 3 bytes away
         inx
         inx
@@ -120,8 +131,6 @@ fs_done:
    lda #>vbi            ; set high byte of hander 
    sta VVBLKD+1       
 
-;        lda #$D4                ; SET INTERRUPT $80, SCROLLING $10 and MODE $40 + 4 (antic 4)
-;        sta main_dlist + 36     ; move to the line we want the DLI to fire
 
         lda #<dli               ; set address of the dli
         sta VDSLST

@@ -4,7 +4,8 @@
 
 #include "chars.h"
 
-
+extern uint8_t rom_dlist[78];
+extern uint8_t ram_dlist[78];
 void init_dlist(void);
 void init_interrupts(void);
 void coarse_scroll_right(void);
@@ -41,11 +42,14 @@ int main(void)
     // setup dlist
     delay_count = 2;
     delay = 1;
+
+    memcpy( ram_dlist, rom_dlist, sizeof(rom_dlist) );
+
     init_dlist();
     horz_scroll = 0;
 
-//    init_interrupts();
-//    ANTIC.nmien = 0xc0;  // activate BOTH display list ($80) and vertical blank $(40) interrupts
+    init_interrupts();
+    ANTIC.nmien = 0xc0;  // activate BOTH display list ($80) and vertical blank $(40) interrupts
 
 
 

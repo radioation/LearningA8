@@ -1,7 +1,21 @@
 #include <atari5200.h>
 #include <stdint.h>
+#include <string.h>
 #include <conio.h>
 #include <peekpoke.h>
+
+
+#pragma bss-name (push, "MYPMG")
+unsigned char pmg_memory[ 2048 ]; // Double line resolution only needs 1024 bytes, single need 2048
+#pragma bss-name (pop)
+
+// player data from https://bocianu.gitlab.io/spred/
+// sprite 0
+unsigned char height = 0x08;
+unsigned char frames0_0[0x08] = {
+    0x3c, 0x66, 0xdb, 0xbd, 0xbd, 0xdb, 0x66, 0x3c
+};
+
 
 // star raiders used 11 IIRC
 // https://atarimuseum.ctrl-alt-rees.com/videogames/consoles/5200/conv_to_5200.html
@@ -45,6 +59,9 @@ int main(void)
     char key0;
     char key1;
     uint8_t tick = 0;
+    uint16_t p = (uint16_t) &pmg_memory;
+
+
 
     clrscr();
 
@@ -56,27 +73,54 @@ int main(void)
     gotoxy(0,0);
     cputs("5200 Controler Test");
 
-init_keypad();
-///    // set consol
-///    // bit 2 must be set 0x04
-///    // which port is scanning (0x00 port 1)
-///    GTIA_WRITE.consol = 0x04 | 0x00;  // port 1 will be next
-///
-///    // https://forums.atariage.com/topic/354064-code-for-reading-5200-joysticks/
-///    // #1 mistake is writing %11 to the low bits of SKCTL. That's how you configure the keyboard for the computer, but the 5200 requires debounce to be off (%10).
-///    POKEY_WRITE.skctl = 0x02; // Keyboard scan enabled, debounce disabled 
-///                              //POKEY_SKCTL = 0x02; 
-///
-///    POKE(POKMSK, PEEK(POKMSK) | 0x40);
-///    POKEY_WRITE.irqen = PEEK(POKMSK);
-///
-///    asm("cli");  // unmask
+    ///    // set consol
+    ///    // bit 2 must be set 0x04
+    ///    // which port is scanning (0x00 port 1)
+    ///    GTIA_WRITE.consol = 0x04 | 0x00;  // port 1 will be next
+    ///
+    ///    // https://forums.atariage.com/topic/354064-code-for-reading-5200-joysticks/
+    ///    // #1 mistake is writing %11 to the low bits of SKCTL. That's how you configure the keyboard for the computer, but the 5200 requires debounce to be off (%10).
+    ///    POKEY_WRITE.skctl = 0x02; // Keyboard scan enabled, debounce disabled 
+    ///                              //POKEY_SKCTL = 0x02; 
+    ///
+    ///    POKE(POKMSK, PEEK(POKMSK) | 0x40);
+    ///    POKEY_WRITE.irqen = PEEK(POKMSK);
+    ///
+    ///    asm("cli");  // unmask
+    init_keypad();
+
+
+    ///////////////////////////////////////////////////
+    // INITIALIZE PMG /////////////////////////////////
+    // set pmbase page with ANTIC
+    ANTIC.pmbase = p >> 8; // >> for page
+    memset( pmg_memory, 0, sizeof(pmg_memory) );
+
+    // set DMACTL
+    OS.sdmctl = 62;    // POKE 559, 46 double line resolution 62 single
+
+    // set GRACTL
+    GTIA_WRITE.gractl = 0x03; 
+    // widths
+    GTIA_WRITE.sizep0 = 0x00;
+
+    OS.pcolr0= 0x08;
+    // OS.gprior = 49; // 32 overlap has color, 1 players over playfield, 16 combine
+    GTIA_WRITE.prior = 17; // no shadow register for the OS?
+
+    // horizontal positions
+    GTIA_WRITE.hposp0=0x3C;
+
+    // Copy shapes to PMG array
+    //memcpy( pmg_memory + 768 + 30 , mplayer, 5 );
+    memcpy( pmg_memory + 1024 + 160, frames0_0, height );
+
 
     while (1) {
         //  A52: DON'T potgo to start read
         //    POKEY_WRITE.potgo = 0;
         wait_vblank();
-//        // alternate keypad reads
+        //        // alternate keypad reads
         if ( (tick &1) == 0 ) {
             top0 = !(POKEY_READ.skstat & 0x08);
             key0 = KEYMAP[  last_key  & 0x0F];

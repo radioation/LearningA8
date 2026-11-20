@@ -7,7 +7,7 @@ LD      := cl65
 TARGET 		:= atari5200
 PROGRAM     := 10_sounds
 BUILD_DIR   := build
-OUT         := $(BUILD_DIR)/$(PROGRAM).rom
+OUT         := $(BUILD_DIR)/$(PROGRAM).a52
 
 
 CFG			:= atari5200.cfg

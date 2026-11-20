@@ -7,7 +7,7 @@ LD      := cl65
 TARGET 		:= atari5200
 PROGRAM     := 06_custom_charset
 BUILD_DIR   := build
-OUT         := $(BUILD_DIR)/$(PROGRAM).rom
+OUT         := $(BUILD_DIR)/$(PROGRAM).a52
 
 
 CFG			:= atari5200.cfg

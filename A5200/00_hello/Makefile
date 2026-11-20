@@ -5,7 +5,7 @@ TARGET = atari5200
 SRC_NAME = main.c
 
 # Define the name of the output executable
-EXE_NAME = 01_hello.rom
+EXE_NAME = 01_hello.a52
 
 # Define the cc65 tools (assuming they are in your PATH or you specify CC65_HOME)
 CC = cl65

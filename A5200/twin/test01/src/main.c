@@ -60,8 +60,11 @@ int main(void)
     char key1;
     uint8_t tick = 0;
     uint16_t p = (uint16_t) &pmg_memory;
-
-
+    int8_t mid = 114;
+    int8_t xdir = 0;
+    int8_t ydir = 0;
+    uint16_t xpos = (100 << 8 );
+    uint16_t ypos = (100 << 8 );;
 
     clrscr();
 
@@ -104,22 +107,25 @@ int main(void)
     // widths
     GTIA_WRITE.sizep0 = 0x00;
 
-    OS.pcolr0= 0x08;
+    OS.pcolr0= 0x2E;
     // OS.gprior = 49; // 32 overlap has color, 1 players over playfield, 16 combine
     GTIA_WRITE.prior = 17; // no shadow register for the OS?
 
     // horizontal positions
-    GTIA_WRITE.hposp0=0x3C;
+    GTIA_WRITE.hposp0=(uint8_t)( xpos >> 8 );
 
     // Copy shapes to PMG array
     //memcpy( pmg_memory + 768 + 30 , mplayer, 5 );
-    memcpy( pmg_memory + 1024 + 160, frames0_0, height );
+    memcpy( pmg_memory + 1024 + (uint8_t)( ypos >> 8 ), frames0_0, height );
 
 
     while (1) {
         //  A52: DON'T potgo to start read
         //    POKEY_WRITE.potgo = 0;
         wait_vblank();
+        GTIA_WRITE.hposp0=(uint8_t)( xpos >> 8 );
+        memset( pmg_memory + 1020 + (uint8_t)(ypos >> 8 ), 0, 16 ); // wasteful clear.
+        memcpy( pmg_memory + 1024 + (uint8_t)( ypos >> 8 ), frames0_0, height );
         //        // alternate keypad reads
         if ( (tick &1) == 0 ) {
             top0 = !(POKEY_READ.skstat & 0x08);
@@ -161,6 +167,17 @@ int main(void)
         cprintf("P2 X:%3u Y:%3u", pot2, pot3);
         gotoxy(0, 8);
         cprintf("   B:%c T:%c KEY:%c", trig1 ? '-' : '1', top1 ? '1' : '-', key1);
+
+        xdir = (int8_t)pot0 - (int8_t)mid;
+        ydir = (int8_t)pot1 - (int8_t)mid;
+        gotoxy(0, 10);
+        cprintf("xd:%d yd: %d   ", xdir, ydir );
+        if( xdir > 12 || xdir < -12 ) {
+            xpos +=  ( xdir << 3 ) ;            
+        }
+        if( ydir > 12 || ydir < -12 ) {
+            ypos +=  ( ydir << 3 ) ;            
+        }
 
 
 

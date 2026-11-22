@@ -71,8 +71,10 @@ int main(void)
     int8_t ydir1 = 0;
     int8_t xdir2 = 0;
     int8_t ydir2 = 0;
-    uint16_t xpos = (100 << 8 );
-    uint16_t ypos = (100 << 8 );;
+    uint16_t m0_x = 0;
+    uint16_t m0_y = 0;
+    uint16_t p0_x = (100 << 8 );
+    uint16_t p0_y = (100 << 8 );;
 
     clrscr();
 
@@ -120,20 +122,20 @@ int main(void)
     GTIA_WRITE.prior = 17; // no shadow register for the OS?
 
     // horizontal positions
-    GTIA_WRITE.hposp0=(uint8_t)( xpos >> 8 );
+    GTIA_WRITE.hposp0=(uint8_t)( p0_x >> 8 );
 
     // Copy shapes to PMG array
     //memcpy( pmg_memory + 768 + 30 , mplayer, 5 );
-    memcpy( pmg_memory + 1024 + (uint8_t)( ypos >> 8 ), frames0_0, height );
+    memcpy( pmg_memory + 1024 + (uint8_t)( p0_y >> 8 ), frames0_0, height );
 
 
     while (1) {
         //  A52: DON'T potgo to start read
         //    POKEY_WRITE.potgo = 0;
         wait_vblank();
-        GTIA_WRITE.hposp0=(uint8_t)( xpos >> 8 );
-        memset( pmg_memory + 1020 + (uint8_t)(ypos >> 8 ), 0, 16 ); // wasteful clear.
-        memcpy( pmg_memory + 1024 + (uint8_t)( ypos >> 8 ), frames0_0, height );
+        GTIA_WRITE.hposp0=(uint8_t)( p0_x >> 8 );
+        memset( pmg_memory + 1020 + (uint8_t)(p0_y >> 8 ), 0, 16 ); // wasteful clear.
+        memcpy( pmg_memory + 1024 + (uint8_t)( p0_y >> 8 ), frames0_0, height );
         //        // alternate keypad reads
         if ( (tick &1) == 0 ) {
             top0 = !(POKEY_READ.skstat & 0x08);
@@ -192,12 +194,18 @@ int main(void)
         cprintf("xlut:%d ylut: %d   ", x_lut, y_lut );
 
         if( xdir1 > 12 || xdir1 < -12 ) {
-            xpos +=  ( xdir1 << 3 ) ;            
+            p0_x +=  ( xdir1 << 3 ) ;            
         }
         if( ydir1 > 12 || ydir1 < -12 ) {
-            ypos +=  ( ydir1 << 3 ) ;            
+            p0_y +=  ( ydir1 << 3 ) ;            
         }
 
+        // m0_y > 0 means missile moving
+        if( trig0  && m0_y == 0 ) {
+            m0_y = p0_y +4;
+            m0_x = p0_x +4;
+        }
+        if( m0_y 
 
 
 

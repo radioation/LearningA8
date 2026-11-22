@@ -34,19 +34,19 @@ for y in range( 0, 16 ):
             dy = y - 7
             dist = math.sqrt( dx*dx +dy*dy)
             if  dist > 2.0 :
-                print('#',end = "")
+                #print('#',end = "")
                 x_dir_lut.append( round( 16 * speed * dx/dist  ) & 0xFF   )
                 y_dir_lut.append( round( 16 *speed * dy/dist )&  0xFF )
             else:
-                print(' ',end = "")
+                #print(' ',end = "")
                 x_dir_lut.append( 0 )
                 y_dir_lut.append( 0 )
         else:
             # nothing needed here
             x_dir_lut.append( 0 )
             y_dir_lut.append( 0 )
-            print('.',end = "")
-    print("")
+            #print('.',end = "")
+    #print("")
 
 
 print("; X LUT ---------------------------------")

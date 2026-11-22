@@ -5,6 +5,10 @@
 #include <peekpoke.h>
 
 
+
+extern uint8_t x_dir_lut[256];
+extern uint8_t y_dir_lut[256];
+
 #pragma bss-name (push, "MYPMG")
 unsigned char pmg_memory[ 2048 ]; // Double line resolution only needs 1024 bytes, single need 2048
 #pragma bss-name (pop)
@@ -56,6 +60,8 @@ int main(void)
     uint8_t trig1;
     uint8_t top0;
     uint8_t top1;
+    uint8_t x_lut;
+    uint8_t y_lut;
     char key0;
     char key1;
     uint8_t tick = 0;
@@ -178,6 +184,13 @@ int main(void)
         ydir2 = (int8_t)pot3 - (int8_t)mid;
         gotoxy(0, 11);
         cprintf("xd2:%d yd2: %d   ", xdir2, ydir2 );
+
+
+        x_lut = pot2 >> 4;
+        y_lut = pot3 >> 4;
+        gotoxy(0, 12);
+        cprintf("xlut:%d ylut: %d   ", x_lut, y_lut );
+
         if( xdir1 > 12 || xdir1 < -12 ) {
             xpos +=  ( xdir1 << 3 ) ;            
         }

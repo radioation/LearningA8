@@ -61,8 +61,10 @@ int main(void)
     uint8_t tick = 0;
     uint16_t p = (uint16_t) &pmg_memory;
     int8_t mid = 114;
-    int8_t xdir = 0;
-    int8_t ydir = 0;
+    int8_t xdir1 = 0;
+    int8_t ydir1 = 0;
+    int8_t xdir2 = 0;
+    int8_t ydir2 = 0;
     uint16_t xpos = (100 << 8 );
     uint16_t ypos = (100 << 8 );;
 
@@ -168,15 +170,19 @@ int main(void)
         gotoxy(0, 8);
         cprintf("   B:%c T:%c KEY:%c", trig1 ? '-' : '1', top1 ? '1' : '-', key1);
 
-        xdir = (int8_t)pot0 - (int8_t)mid;
-        ydir = (int8_t)pot1 - (int8_t)mid;
+        xdir1 = (int8_t)pot0 - (int8_t)mid;
+        ydir1 = (int8_t)pot1 - (int8_t)mid;
         gotoxy(0, 10);
-        cprintf("xd:%d yd: %d   ", xdir, ydir );
-        if( xdir > 12 || xdir < -12 ) {
-            xpos +=  ( xdir << 3 ) ;            
+        cprintf("xd1:%d yd1: %d   ", xdir1, ydir1 );
+        xdir2 = (int8_t)pot2 - (int8_t)mid;
+        ydir2 = (int8_t)pot3 - (int8_t)mid;
+        gotoxy(0, 11);
+        cprintf("xd2:%d yd2: %d   ", xdir2, ydir2 );
+        if( xdir1 > 12 || xdir1 < -12 ) {
+            xpos +=  ( xdir1 << 3 ) ;            
         }
-        if( ydir > 12 || ydir < -12 ) {
-            ypos +=  ( ydir << 3 ) ;            
+        if( ydir1 > 12 || ydir1 < -12 ) {
+            ypos +=  ( ydir1 << 3 ) ;            
         }
 
 

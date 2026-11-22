@@ -23,8 +23,9 @@ import math
 
 # we could access with  LUT[ x + y << 4 ]
 
-
-dir_lut = []
+speed = 3.0
+x_dir_lut = []
+y_dir_lut = []
 for y in range( 0, 16 ):
     for x in range( 0, 16 ):
         if x < 15 and y < 15 :
@@ -33,14 +34,33 @@ for y in range( 0, 16 ):
             dy = y - 7
             dist = math.sqrt( dx*dx +dy*dy)
             if  dist > 2.0 :
-                print(1,end = "")
-                dir_lut.append( 1 )
+                print('#',end = "")
+                x_dir_lut.append( round( 16 * speed * dx/dist  ) & 0xFF   )
+                y_dir_lut.append( round( 16 *speed * dy/dist )&  0xFF )
             else:
-                print('.',end = "")
-                dir_lut.append( 0 )
+                print(' ',end = "")
+                x_dir_lut.append( 0 )
+                y_dir_lut.append( 0 )
         else:
             # nothing needed here
-            dir_lut.append( 0 )
-            print(0,end = "")
+            x_dir_lut.append( 0 )
+            y_dir_lut.append( 0 )
+            print('.',end = "")
     print("")
+
+
+print("; X LUT ---------------------------------")
+print("x_dir_lut:")
+#print("    .byte ", end= "")
+#for xd in x_dir_lut:
+#    print(xd, end=", ")
+for i in range( 0, len( x_dir_lut) , 16 ):
+    print("    .byte " + ",".join(f'${x:02X}' for x in x_dir_lut[i:i+16]))
+
+print("; Y LUT ---------------------------------")
+print("y_dir_lut:")
+for i in range( 0, len( y_dir_lut) , 16 ):
+    print("    .byte " + ",".join(f'${y:02X}' for y in y_dir_lut[i:i+16]))
+
+
 

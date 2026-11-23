@@ -4,6 +4,22 @@
 #include <conio.h>
 #include <peekpoke.h>
 
+//#define SHOW_VALS
+#define SHOW_FPS
+
+extern uint8_t zp_vel_lo;
+extern uint8_t zp_vel_hi;
+extern uint8_t zp_lut_index;
+extern uint8_t zp_missile_index;
+
+#pragma zpsym("zp_vel_lo");
+#pragma zpsym("zp_vel_hi");
+#pragma zpsym("zp_missile_index");
+
+extern uint8_t missile_x_lo[];
+extern uint8_t missile_x_hi[];
+extern uint8_t missile_y_lo[];
+extern uint8_t missile_y_lo[];
 
 
 extern uint8_t x_dir_lut[256];
@@ -52,6 +68,11 @@ void wait_vblank(void) {
 
 int main(void)
 {
+
+    uint8_t start_tick;
+    uint8_t frames;
+    uint8_t fps;
+
     uint8_t pot0;
     uint8_t pot1;
     uint8_t pot2;
@@ -128,11 +149,25 @@ int main(void)
     //memcpy( pmg_memory + 768 + 30 , mplayer, 5 );
     memcpy( pmg_memory + 1024 + (uint8_t)( p0_y >> 8 ), frames0_0, height );
 
-
+    frames = 0;
+    fps = 0;
+    wait_vblank();
+    start_tick = OS.rtclok[1];
     while (1) {
         //  A52: DON'T potgo to start read
         //    POKEY_WRITE.potgo = 0;
         wait_vblank();
+#ifdef SHOW_FPS
+        ++frames;
+        if ((uint8_t)(OS.rtclok[1] - start_tick) >= 60) {
+            fps = frames;
+            frames = 0;
+            start_tick += 60;
+           gotoxy(0, 1);
+            cprintf("FPS:%d   ", fps);
+
+        }
+#endif
         GTIA_WRITE.hposp0=(uint8_t)( p0_x >> 8 );
         memset( pmg_memory + 1020 + (uint8_t)(p0_y >> 8 ), 0, 16 ); // wasteful clear.
         memcpy( pmg_memory + 1024 + (uint8_t)( p0_y >> 8 ), frames0_0, height );
@@ -165,33 +200,35 @@ int main(void)
         trig1 = GTIA_READ.trig1;
 
 
+        xdir1 = (int8_t)pot0 - (int8_t)mid;
+        ydir1 = (int8_t)pot1 - (int8_t)mid;
+        xdir2 = (int8_t)pot2 - (int8_t)mid;
+        ydir2 = (int8_t)pot3 - (int8_t)mid;
 
+        x_lut = pot2 >> 4;
+        y_lut = pot3 >> 4;
+
+#ifdef SHOW_VALS
         // Display controller 1
         gotoxy(0, 3);
         cprintf("P1 X:%3u Y:%3u", pot0, pot1);
         gotoxy(0, 4);
         cprintf("   B:%c T:%c KEY:%c", trig0 ? '-' : '1', top0 ? '1' : '-', key0);
 
-        // Display controler 2
+       //  Display controler 2
         gotoxy(0, 7);
         cprintf("P2 X:%3u Y:%3u", pot2, pot3);
         gotoxy(0, 8);
         cprintf("   B:%c T:%c KEY:%c", trig1 ? '-' : '1', top1 ? '1' : '-', key1);
-
-        xdir1 = (int8_t)pot0 - (int8_t)mid;
-        ydir1 = (int8_t)pot1 - (int8_t)mid;
         gotoxy(0, 10);
         cprintf("xd1:%d yd1: %d   ", xdir1, ydir1 );
-        xdir2 = (int8_t)pot2 - (int8_t)mid;
-        ydir2 = (int8_t)pot3 - (int8_t)mid;
         gotoxy(0, 11);
         cprintf("xd2:%d yd2: %d   ", xdir2, ydir2 );
 
 
-        x_lut = pot2 >> 4;
-        y_lut = pot3 >> 4;
         gotoxy(0, 12);
         cprintf("xlut:%d ylut: %d   ", x_lut, y_lut );
+#endif
 
         if( xdir1 > 12 || xdir1 < -12 ) {
             p0_x +=  ( xdir1 << 3 ) ;            
@@ -200,13 +237,12 @@ int main(void)
             p0_y +=  ( ydir1 << 3 ) ;            
         }
 
-    //    // m0_y > 0 means missile moving
-    //    if( trig0  && m0_y == 0 ) {
-    //        m0_y = p0_y +4;
-    //        m0_x = p0_x +4;
-    //    }
-    //    if( m0_y 
-
+        //    // m0_y > 0 means missile moving
+        //    if( trig0  && m0_y == 0 ) {
+        //        m0_y = p0_y +4;
+        //        m0_x = p0_x +4;
+        //    }
+        //    if( m0_y 
 
 
 

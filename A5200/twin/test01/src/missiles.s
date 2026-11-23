@@ -2,23 +2,28 @@
 .setcpu "6502"
 .include "atari5200.inc"
 
-.export _x_dir_lut, _y_dir_lut, _zp_idx, _zp_vel_lo, _zp_vel_hi, _zp_lut_idx ,_missile_x_lo ,_missile_x_hi ,_missile_y_lo ,_missile_y_hi
+.export _x_dir_lut, _y_dir_lut, _zp_x_vel_lo, _zp_x_vel_hi, _zp_y_vel_lo, _zp_y_vel_hi, _zp_missile_index, _missile_x_lo ,_missile_x_hi ,_missile_y_lo ,_missile_y_hi
 
    .segment "ZEROPAGE"
-_zp_idx:
-   .res 1
-_zp_vel_lo:
+_zp_x_vel_lo:
       .res 1  ;   velocity low
-
-_zp_vel_hi:
+_zp_x_vel_hi:
   .res 1    ; velocity hi byte
-_zp_lut_idx:
-      .res 1 
+_zp_y_vel_lo:
+      .res 1  ;   velocity low
+_zp_y_vel_hi:
+  .res 1    ; velocity hi byte
+
+
+_zp_missile_index:    ; which missile are we looking at (0-3)
+   .res 1
+
 
 
 .segment "BSS"
     _missile_x_lo: .res 4
     _missile_x_hi: .res 4
+
     _missile_y_lo: .res 4
     _missile_y_hi: .res 4
 
@@ -64,3 +69,19 @@ y_dir_lut:
     .byte $22,$24,$27,$2A,$2C,$2E,$30,$30,$30,$2E,$2C,$2A,$27,$24,$22,$00
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 _y_dir_lut = y_dir_lut
+
+
+   .segment "CODE"
+
+
+
+.proc _move_m0
+
+
+
+    rts
+.endproc
+
+
+
+

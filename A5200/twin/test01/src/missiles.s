@@ -2,7 +2,28 @@
 .setcpu "6502"
 .include "atari5200.inc"
 
-.export _x_dir_lut, _y_dir_lut
+.export _x_dir_lut, _y_dir_lut, _zp_idx, _zp_vel_lo, _zp_vel_hi, _zp_lut_idx ,_missile_x_lo ,_missile_x_hi ,_missile_y_lo ,_missile_y_hi
+
+   .segment "ZEROPAGE"
+_zp_idx:
+   .res 1
+_zp_vel_lo:
+      .res 1  ;   velocity low
+
+_zp_vel_hi:
+  .res 1    ; velocity hi byte
+_zp_lut_idx:
+      .res 1 
+
+
+.segment "BSS"
+    _missile_x_lo: .res 4
+    _missile_x_hi: .res 4
+    _missile_y_lo: .res 4
+    _missile_y_hi: .res 4
+
+
+.segment "RODATA"
 
 ; X LUT ---------------------------------
 x_dir_lut:

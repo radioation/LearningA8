@@ -200,12 +200,12 @@ int main(void)
             p0_y +=  ( ydir1 << 3 ) ;            
         }
 
-        // m0_y > 0 means missile moving
-        if( trig0  && m0_y == 0 ) {
-            m0_y = p0_y +4;
-            m0_x = p0_x +4;
-        }
-        if( m0_y 
+    //    // m0_y > 0 means missile moving
+    //    if( trig0  && m0_y == 0 ) {
+    //        m0_y = p0_y +4;
+    //        m0_x = p0_x +4;
+    //    }
+    //    if( m0_y 
 
 
 

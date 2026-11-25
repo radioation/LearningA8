@@ -14,16 +14,25 @@ extern uint8_t zp_missile_index;
 
 #pragma zpsym("zp_vel_lo");
 #pragma zpsym("zp_vel_hi");
+#pragma zpsym("zp_lut_index");
 #pragma zpsym("zp_missile_index");
 
 extern uint8_t missile_x_lo[];
 extern uint8_t missile_x_hi[];
 extern uint8_t missile_y_lo[];
-extern uint8_t missile_y_lo[];
+extern uint8_t missile_y_hi[];
 
 
-extern uint8_t x_dir_lut[256];
-extern uint8_t y_dir_lut[256];
+//extern uint8_t x_dir_lut[256];
+//extern uint8_t y_dir_lut[256];
+extern uint8_t x_dir_lut_lo[256];
+extern uint8_t x_dir_lut_hi[256];
+extern uint8_t y_dir_lut_lo[256];
+extern uint8_t y_dir_lut_hi[256];
+
+
+extern void move_m0();
+
 
 #pragma bss-name (push, "MYPMG")
 unsigned char pmg_memory[ 2048 ]; // Double line resolution only needs 1024 bytes, single need 2048
@@ -237,12 +246,23 @@ int main(void)
             p0_y +=  ( ydir1 << 3 ) ;            
         }
 
-        //    // m0_y > 0 means missile moving
-        //    if( trig0  && m0_y == 0 ) {
-        //        m0_y = p0_y +4;
-        //        m0_x = p0_x +4;
-        //    }
-        //    if( m0_y 
+        // m0_y > 0 means missile moving
+        if( trig0  && missile_y_hi[0] == 0 ) {
+            zp_lut_index = x_lut | ( y_lut <<4 );
+            if( x_dir_lut_lo[ zp_lut_index ] != 0  &&
+                    x_dir_lut_hi[ zp_lut_index ] != 0  &&
+                    y_dir_lut_lo[ zp_lut_index ] != 0  &&
+                    y_dir_lut_hi[ zp_lut_index ] != 0  ) {
+
+                missile_y_hi[0] = p0_y +4;
+                missile_y_lo[0] = 0;
+                missile_x_hi[0] = p0_x +4;
+                missile_x_lo[0] = 0;
+            }
+        }
+        if( missile_y_hi[0] != 0 ) {
+            move_m0();
+        }
 
 
 

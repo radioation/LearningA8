@@ -2,19 +2,17 @@
 .setcpu "6502"
 .include "atari5200.inc"
 
-.export _x_dir_lut, _y_dir_lut, _zp_x_vel_lo, _zp_x_vel_hi, _zp_y_vel_lo, _zp_y_vel_hi, _zp_missile_index, _missile_x_lo ,_missile_x_hi ,_missile_y_lo ,_missile_y_hi, _x_dir_lut_hi, _y_dir_lut_hi, _x_dir_lut_lo, _y_dir_lut_lo
+.export _x_dir_lut, _y_dir_lut, _zp_vel_lo, _zp_vel_hi, _zp_lut_index, _zp_missile_index, _missile_x_lo ,_missile_x_hi ,_missile_y_lo ,_missile_y_hi, _x_dir_lut_hi, _y_dir_lut_hi, _x_dir_lut_lo, _y_dir_lut_lo, _move_m0
 
 
    .segment "ZEROPAGE"
-_zp_x_vel_lo:
+_zp_vel_lo:
       .res 1  ;   velocity low
-_zp_x_vel_hi:
-  .res 1    ; velocity hi byte
-_zp_y_vel_lo:
-      .res 1  ;   velocity low
-_zp_y_vel_hi:
+_zp_vel_hi:
   .res 1    ; velocity hi byte
 
+_zp_lut_index:
+    .res 1
 
 _zp_missile_index:    ; which missile are we looking at (0-3)
    .res 1
@@ -156,8 +154,27 @@ _y_dir_lut_lo = y_dir_lut_lo
 
 
 .proc _move_m0
+    LDX _zp_lut_index ; X is used to get velocity components.
+    LDY #0            ; Y is missile slot, just doing misile 0 here
 
+    clc     ; get ready to add
+    LDA _missile_x_lo, Y ; get M0 fractional component 
+    ADC x_dir_lut_lo, X     ; add low velocity to it
+    STA _missile_x_lo, Y ; save it
 
+    LDA _missile_x_hi, Y ; get M0 integer component
+    ADC x_dir_lut_hi, X     ; add hi velocity to it
+    STA _missile_x_hi, Y ; save it
+
+    
+    clc     ; get ready to add
+    LDA _missile_y_lo, Y ; get M0 fractional component 
+    ADC y_dir_lut_lo, X     ; add low velocity to it
+    STA _missile_y_lo, Y ; save it
+
+    LDA _missile_y_hi, Y ; get M0 integer component
+    ADC y_dir_lut_hi, X     ; add hi velocity to it
+    STA _missile_y_hi, Y ; save it
 
     rts
 .endproc

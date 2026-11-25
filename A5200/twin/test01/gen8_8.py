@@ -65,18 +65,23 @@ print("x_dir_lut_hi:")
 for i in range( 0, len( x_dir_lut_hi) , 16 ):
     print("    .byte " + ",".join(f'${x:02X}' for x in x_dir_lut_hi[i:i+16]))
 
+print("_x_dir_lut_hi = x_dir_lut_hi")
+
 print("x_dir_lut_lo:")
 for i in range( 0, len( x_dir_lut_lo) , 16 ):
     print("    .byte " + ",".join(f'${x:02X}' for x in x_dir_lut_lo[i:i+16]))
+print("_x_dir_lut_lo = x_dir_lut_lo")
 
 print("; Y LUT ---------------------------------")
 print("y_dir_lut_hi:")
 for i in range( 0, len( y_dir_lut_hi) , 16 ):
     print("    .byte " + ",".join(f'${y:02X}' for y in y_dir_lut_hi[i:i+16]))
+print("_y_dir_lut_hi = y_dir_lut_hi")
 
 print("y_dir_lut_lo:")
 for i in range( 0, len( y_dir_lut_lo) , 16 ):
     print("    .byte " + ",".join(f'${y:02X}' for y in y_dir_lut_lo[i:i+16]))
+print("_y_dir_lut_lo = y_dir_lut_lo")
 
 
 

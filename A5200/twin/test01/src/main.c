@@ -4,7 +4,7 @@
 #include <conio.h>
 #include <peekpoke.h>
 
-//#define SHOW_VALS
+#define SHOW_VALS
 #define SHOW_FPS
 
 extern uint8_t zp_vel_lo;
@@ -143,7 +143,7 @@ int main(void)
     OS.sdmctl = 62;    // POKE 559, 46 double line resolution 62 single
 
     // set GRACTL
-    GTIA_WRITE.gractl = 0x03; 
+    GTIA_WRITE.gractl = 0x03;   
     // widths
     GTIA_WRITE.sizep0 = 0x00;
 
@@ -151,8 +151,10 @@ int main(void)
     // OS.gprior = 49; // 32 overlap has color, 1 players over playfield, 16 combine
     GTIA_WRITE.prior = 17; // no shadow register for the OS?
 
+    //memset( pmg_memory+768, 255, 256); 
     // horizontal positions
     GTIA_WRITE.hposp0=(uint8_t)( p0_x >> 8 );
+    //GTIA_WRITE.hposm0= (uint8_t)( p0_x >> 8 );
 
     // Copy shapes to PMG array
     //memcpy( pmg_memory + 768 + 30 , mplayer, 5 );
@@ -172,7 +174,7 @@ int main(void)
             fps = frames;
             frames = 0;
             start_tick += 60;
-           gotoxy(0, 1);
+            gotoxy(0, 1);
             cprintf("FPS:%d   ", fps);
 
         }
@@ -180,6 +182,9 @@ int main(void)
         GTIA_WRITE.hposp0=(uint8_t)( p0_x >> 8 );
         memset( pmg_memory + 1020 + (uint8_t)(p0_y >> 8 ), 0, 16 ); // wasteful clear.
         memcpy( pmg_memory + 1024 + (uint8_t)( p0_y >> 8 ), frames0_0, height );
+            GTIA_WRITE.hposm0= (uint8_t)( missile_x_hi[0]  );
+            pmg_memory [ 768 + (uint8_t)(missile_y_hi[0] )] = 0b0000011;
+            pmg_memory [ 769 + (uint8_t)(missile_y_hi[0] )] = 0b0000011;
         //        // alternate keypad reads
         if ( (tick &1) == 0 ) {
             top0 = !(POKEY_READ.skstat & 0x08);
@@ -224,7 +229,7 @@ int main(void)
         gotoxy(0, 4);
         cprintf("   B:%c T:%c KEY:%c", trig0 ? '-' : '1', top0 ? '1' : '-', key0);
 
-       //  Display controler 2
+        //  Display controler 2
         gotoxy(0, 7);
         cprintf("P2 X:%3u Y:%3u", pot2, pot3);
         gotoxy(0, 8);
@@ -237,6 +242,9 @@ int main(void)
 
         gotoxy(0, 12);
         cprintf("xlut:%d ylut: %d   ", x_lut, y_lut );
+
+        gotoxy(0, 13);
+        cprintf(" xh:%d yh: %d  ", (int8_t)x_dir_lut_hi[zp_lut_index], (int8_t) y_dir_lut_hi[ zp_lut_index] );
 #endif
 
         if( xdir1 > 12 || xdir1 < -12 ) {
@@ -246,22 +254,40 @@ int main(void)
             p0_y +=  ( ydir1 << 3 ) ;            
         }
 
+        
+       
+      
+     
         // m0_y > 0 means missile moving
-        if( trig0  && missile_y_hi[0] == 0 ) {
+        if( !trig0  && missile_y_hi[0] == 0 ) {
             zp_lut_index = x_lut | ( y_lut <<4 );
-            if( x_dir_lut_lo[ zp_lut_index ] != 0  &&
-                    x_dir_lut_hi[ zp_lut_index ] != 0  &&
-                    y_dir_lut_lo[ zp_lut_index ] != 0  &&
+            if( x_dir_lut_lo[ zp_lut_index ] != 0  ||
+                    x_dir_lut_hi[ zp_lut_index ] != 0  ||
+                    y_dir_lut_lo[ zp_lut_index ] != 0  ||
                     y_dir_lut_hi[ zp_lut_index ] != 0  ) {
 
-                missile_y_hi[0] = p0_y +4;
+       
+                missile_y_hi[0] = (p0_y >>8 ) +4;
                 missile_y_lo[0] = 0;
-                missile_x_hi[0] = p0_x +4;
+                missile_x_hi[0] = (p0_x >> 8 ) +4;
                 missile_x_lo[0] = 0;
             }
         }
         if( missile_y_hi[0] != 0 ) {
+            gotoxy(0, 14);
+            cprintf(" m0 x:%d y: %d   ", missile_x_hi[0], missile_y_hi[0] );
+            pmg_memory [ 768 + (uint8_t)(missile_y_hi[0] )] = 0b0000000;
+            pmg_memory [ 769 + (uint8_t)(missile_y_hi[0] )] = 0b0000000;
             move_m0();
+            // visible bounds X: 48 to 207  Y: 32 to 223
+            if( missile_x_hi[0]  < 48 || 
+                missile_x_hi[0] > 207 ||
+                missile_y_hi[0] < 32 ||
+                missile_y_hi[0] > 223 )
+            {
+                    missile_y_hi[0] = 0;
+            }
+
         }
 
 

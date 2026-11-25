@@ -4,7 +4,7 @@
 #include <conio.h>
 #include <peekpoke.h>
 
-#define SHOW_VALS
+//#define SHOW_VALS
 #define SHOW_FPS
 
 extern uint8_t zp_vel_lo;
@@ -182,9 +182,10 @@ int main(void)
         GTIA_WRITE.hposp0=(uint8_t)( p0_x >> 8 );
         memset( pmg_memory + 1020 + (uint8_t)(p0_y >> 8 ), 0, 16 ); // wasteful clear.
         memcpy( pmg_memory + 1024 + (uint8_t)( p0_y >> 8 ), frames0_0, height );
-            GTIA_WRITE.hposm0= (uint8_t)( missile_x_hi[0]  );
-            pmg_memory [ 768 + (uint8_t)(missile_y_hi[0] )] = 0b0000011;
-            pmg_memory [ 769 + (uint8_t)(missile_y_hi[0] )] = 0b0000011;
+        GTIA_WRITE.hposm0= (uint8_t)( missile_x_hi[0]  );
+        memset( pmg_memory + 762 + (uint8_t)(missile_y_hi[0] ), 0, 13 ); // wasteful clear.
+        pmg_memory [ 768 + (uint8_t)(missile_y_hi[0] )] = 0b0000011;
+        pmg_memory [ 769 + (uint8_t)(missile_y_hi[0] )] = 0b0000011;
         //        // alternate keypad reads
         if ( (tick &1) == 0 ) {
             top0 = !(POKEY_READ.skstat & 0x08);
@@ -254,10 +255,10 @@ int main(void)
             p0_y +=  ( ydir1 << 3 ) ;            
         }
 
-        
-       
-      
-     
+
+
+
+
         // m0_y > 0 means missile moving
         if( !trig0  && missile_y_hi[0] == 0 ) {
             zp_lut_index = x_lut | ( y_lut <<4 );
@@ -266,26 +267,27 @@ int main(void)
                     y_dir_lut_lo[ zp_lut_index ] != 0  ||
                     y_dir_lut_hi[ zp_lut_index ] != 0  ) {
 
-       
-                missile_y_hi[0] = (p0_y >>8 ) +4;
+
+                missile_y_hi[0] = (p0_y >>8 ) +3;
                 missile_y_lo[0] = 0;
-                missile_x_hi[0] = (p0_x >> 8 ) +4;
+                missile_x_hi[0] = (p0_x >> 8 ) +3;
                 missile_x_lo[0] = 0;
             }
         }
         if( missile_y_hi[0] != 0 ) {
-            gotoxy(0, 14);
-            cprintf(" m0 x:%d y: %d   ", missile_x_hi[0], missile_y_hi[0] );
-            pmg_memory [ 768 + (uint8_t)(missile_y_hi[0] )] = 0b0000000;
-            pmg_memory [ 769 + (uint8_t)(missile_y_hi[0] )] = 0b0000000;
+            //gotoxy(0, 14);
+            //cprintf(" m0 x:%d y: %d   ", missile_x_hi[0], missile_y_hi[0] );
+            //pmg_memory [ 768 + (uint8_t)(missile_y_hi[0] )] = 0b0000000;
+            //pmg_memory [ 769 + (uint8_t)(missile_y_hi[0] )] = 0b0000000;
             move_m0();
             // visible bounds X: 48 to 207  Y: 32 to 223
             if( missile_x_hi[0]  < 48 || 
-                missile_x_hi[0] > 207 ||
-                missile_y_hi[0] < 32 ||
-                missile_y_hi[0] > 223 )
+                    missile_x_hi[0] > 207 ||
+                    missile_y_hi[0] < 32 ||
+                    missile_y_hi[0] > 223 )
             {
-                    missile_y_hi[0] = 0;
+                memset( pmg_memory + 762 + (uint8_t)(missile_y_hi[0] ), 0, 13 ); // wasteful clear.
+                missile_y_hi[0] = 0;
             }
 
         }

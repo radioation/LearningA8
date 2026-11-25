@@ -30,6 +30,7 @@ x_dir_lut_lo = []
 y_dir_lut_lo = []
 for y in range( 0, 16 ):
     for x in range( 0, 16 ):
+        print(f'X {x} Y {y} ', end='')
         if x < 15 and y < 15 :
             # add a value
             dx = x - 7
@@ -37,10 +38,14 @@ for y in range( 0, 16 ):
             dist = math.sqrt( dx*dx +dy*dy)
             if  dist > 2.0 :
                 #print('#',end = "")
-                x_dir_lut_hi.append( round( speed * dx/dist  ) & 0xFF   )
-                y_dir_lut_hi.append( round( speed * dy/dist )&  0xFF )
-                x_dir_lut_lo.append( round( 128 *speed * dx/dist  ) & 0xFF   )
-                y_dir_lut_lo.append( round( 128 *speed * dy/dist )&  0xFF )
+                temp_x = int(round( 256.0 * speed * dx/dist ))
+                twos_comp_x = temp_x &0xFFFF 
+                temp_y = int(round( 256.0 * speed * dy/dist ))
+                twos_comp_y = temp_y &0xFFFF 
+                x_dir_lut_hi.append( ( twos_comp_x >>8 ) & 0xFF   )
+                y_dir_lut_hi.append( ( twos_comp_y >> 8 )&  0xFF )
+                x_dir_lut_lo.append(  twos_comp_x & 0xFF   )
+                y_dir_lut_lo.append(  twos_comp_y &  0xFF )
             else:
                 #print(' ',end = "")
                 x_dir_lut_hi.append( 0 )

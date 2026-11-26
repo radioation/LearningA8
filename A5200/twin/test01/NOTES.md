@@ -1,4 +1,27 @@
 # notas
+## player movement
+I'm using the difference between the current potentiometer
+reading and midpoint (will need calibration in real game) 
+and down shifting that to add to the 8.8 position of the 
+player
+
+```c
+        if( xdir1 > 12 || xdir1 < -12 ) {
+            p0_x +=  ( xdir1 << 2 ) ; (looks like an up shift here, but when setting player position I'm shiftin 8 in the other dir.)
+        }
+        if( ydir1 > 12 || ydir1 < -12 ) {
+            p0_y +=  ( ydir1 << 2 ) ;
+        }
+```
+
+```c
+        GTIA_WRITE.hposp0=(uint8_t)( p0_x >> 8 );
+        memset( pmg_memory + 1020 + (uint8_t)(p0_y >> 8 ), 0, 16 ); // wasteful clear.
+        memcpy( pmg_memory + 1024 + (uint8_t)( p0_y >> 8 ), frames0_0, height );
+```
+
+
+## shooting 
 
 * player/missile visible bounds X: 48 to 207  Y: 32 to 223
 

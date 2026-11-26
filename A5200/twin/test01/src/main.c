@@ -249,10 +249,10 @@ int main(void)
 #endif
 
         if( xdir1 > 12 || xdir1 < -12 ) {
-            p0_x +=  ( xdir1 << 3 ) ;            
+            p0_x +=  ( xdir1 << 2 ) ;            
         }
         if( ydir1 > 12 || ydir1 < -12 ) {
-            p0_y +=  ( ydir1 << 3 ) ;            
+            p0_y +=  ( ydir1 << 2 ) ;            
         }
 
 

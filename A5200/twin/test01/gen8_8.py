@@ -23,7 +23,7 @@ import math
 
 # we could access with  LUT[ x + y << 4 ]
 
-speed = 3.0
+speed = 4.0
 x_dir_lut_hi = []
 y_dir_lut_hi = []
 x_dir_lut_lo = []

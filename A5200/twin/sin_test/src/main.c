@@ -45,6 +45,13 @@ int main(void)
 
   memset(screen_ram, 0,   (80 * 40 ) + ( 4* 20) );
 
+    OS.color1 = 0x0F; // text
+    OS.color2 = 0x48; // bg
+    OS.color3 = 0x88; // bg
+    OS.color4 = 0x00;
+
+
+
   //screen_ram[0] = 0xFF;
   screen_ram[40] = 0b01000000; // higher bits are leftward.
   screen_ram[80] = 0b10000000;
@@ -72,7 +79,7 @@ int main(void)
     set_pixel( center_px + ( 10 * sin_tab[(uint8_t)(i+64)] )/127, center_y + ( 10 * sin_tab[(uint8_t)(i)] )/127 );
   }
   for( i = 0; i < 255; ++i ) {
-    set_pixel2( center_px + ( 10 * sin_tab[(uint8_t)(i+64)] )/127, center_y + ( 10 * sin_tab[(uint8_t)(i)] )/127 );
+    set_pixel2( center_px + ( 10 * sin_tab2[(uint8_t)(i+64)] )/127, center_y + ( 10 * sin_tab2[(uint8_t)(i)] )/127 );
   }
 
   while (1) { }

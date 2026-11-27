@@ -6,6 +6,7 @@
 #include "fs1line.h"
 
 extern void stress_test();
+extern void test_edge_cases();
 
 extern int8_t sin_tab[256];
 extern int8_t sin_tab2[256];
@@ -98,7 +99,8 @@ int main(void)
     fs1_line( 150, 10, 150, 70 );
 
 
-   stress_test(); // test
+   //stress_test(); // test
+   test_edge_cases(); // test
 
 
 

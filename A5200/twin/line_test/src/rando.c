@@ -90,3 +90,43 @@ void stress_test()
         ++test_frame_count;
     }
 }
+const uint8_t edge_cases[][4] = {
+    {   0,  0, 159,  0 },  // Top edge
+    {   0, 78, 159, 78 },  // Bottom edge
+    {   0,  0,   0, 78 },  // Left edge
+    { 159,  0, 159, 78 },  // Right edge
+
+    {   0,  0, 159, 78 },  // Diagonal
+    {   0, 78, 159,  0 },  // Opposite diagonal
+    { 159, 78,   0,  0 },  // Reversed endpoints
+    { 159,  0,   0, 78 },
+
+    {  40, 40,  40, 40 },  // Single pixel, mask C0
+    {  41, 40,  41, 40 },  // Single pixel, mask 30
+    {  42, 40,  42, 40 },  // Single pixel, mask 0C
+    {  43, 40,  43, 40 },  // Single pixel, mask 03
+
+    {  40, 40,  41, 40 },  // Two adjacent pixels
+    {  43, 40,  44, 40 },  // Cross byte boundary
+    {  40, 40,  40, 41 },  // Short vertical
+    {  40, 41,  40, 40 },  // Short vertical, reversed
+    {  40, 40,  41, 41 },  // 45-degree line
+    {  40, 41,  41, 40 }
+};
+
+void test_edge_cases()
+{
+    uint8_t i;
+
+    for (i = 0; i < sizeof(edge_cases) / sizeof(edge_cases[0]); ++i)
+    {
+        test_x1 = fs1_x1 = edge_cases[i][0];
+        test_y1 = fs1_y1 = edge_cases[i][1];
+        test_x2 = fs1_x2 = edge_cases[i][2];
+        test_y2 = fs1_y2 = edge_cases[i][3];
+
+        ++test_line_count;
+            fs1_plotl();
+
+    }
+}

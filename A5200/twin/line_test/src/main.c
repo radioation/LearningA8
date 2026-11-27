@@ -62,9 +62,10 @@ int main(void)
     //    memset( FRAME_BUFFER_0, 0, 3840 );   // no-zero 
     fs1_clear_0();
 
-    OS.color1 = 0x0F; // text
-    OS.color2 = 0x48; // bg
-    OS.color3 = 0x88; // bg
+    OS.color0 = 0x14; 
+    OS.color1 = 0x0F; 
+    OS.color2 = 0x48;
+    OS.color3 = 0x28;
     OS.color4 = 0x00;
 
     fs1_fb_hi = 0x20; 
@@ -99,7 +100,6 @@ int main(void)
     fs1_line( 150, 10, 150, 70 );
 
 
-   //stress_test(); // test
    test_edge_cases(); // test
 
 
@@ -139,6 +139,7 @@ int main(void)
     
         }
     
+   //stress_test(); // test
 
     while (1) { }
 

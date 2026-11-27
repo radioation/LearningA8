@@ -16,6 +16,14 @@
 
         .include "fs1line.inc"
 
+.export L1DDF
+.export L1DF0
+.export L1DEC
+.export L1C55
+.export L1E4A
+.export L1ECC
+.export SCRNP
+
 ;----------------------------------------------------------------
         .segment "ZEROPAGE"
 

@@ -39,7 +39,7 @@ _dlist_0:
         .word $2000                  ; gives address of start of screen memory. ( DL and DL+1)
         .repeat 79 
         ;.repeat 96 
-            .byte $0D                ; rest of ANTIC D lines ( 2 * 79 scanlines) total 159 + 2 = 160 scanlines
+            .byte $0D                ; rest of ANTIC D lines ( 2 * 79 scanlines) total 158 + 2 = 160 scanlines
         .endrepeat
 
 
@@ -55,7 +55,7 @@ _dlist_1:
         .byte $4D                    ; LMS + sets ANTIC D   (2 scanlines)
         .word $3000                  ; gives address of start of screen memory. ( DL and DL+1)
         .repeat 79 
-            .byte $0D                ; rest of ANTIC D lines ( 2 * 79 scanlines) total 159 + 2 = 160 scanlines
+            .byte $0D                ; rest of ANTIC D lines ( 2 * 79 scanlines) total 158 + 2 = 160 scanlines
         .endrepeat
 
 

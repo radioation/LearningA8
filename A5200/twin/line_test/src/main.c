@@ -5,6 +5,8 @@
 #include "display.h"
 #include "fs1line.h"
 
+extern void stress_test();
+
 extern int8_t sin_tab[256];
 extern int8_t sin_tab2[256];
 
@@ -64,6 +66,12 @@ int main(void)
     OS.color3 = 0x88; // bg
     OS.color4 = 0x00;
 
+    fs1_fb_hi = 0x20; 
+    fs1_setcol( 1 );
+
+   //stress_test(); // test
+
+
 
     //
     FRAME_BUFFER_0[0] = 0xFF;
@@ -77,7 +85,6 @@ int main(void)
     //  so (80/2)*40 for centered row, +20 for center of the current row
     FRAME_BUFFER_0[(int)center_x_byte + (int)center_y *40 ] = 0b00000001;
 
-    fs1_fb_hi = 0x20; 
     //fs1_fb_hi = 0x30; 
 
     fs1_setcol( 1 );
@@ -91,6 +98,7 @@ int main(void)
     fs1_line( 150, 10, 150, 70 );
 
 
+   stress_test(); // test
 
 
 

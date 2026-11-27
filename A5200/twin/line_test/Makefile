@@ -31,7 +31,8 @@ INCLUDES := -I src -I include
 CFLAGS   := -t $(TARGET) -Oirs $(INCLUDES) --add-source
 ASFLAGS  := -t $(TARGET) $(INCLUDES)
 LDFLAGS  := -t $(TARGET) -C $(CFG)  -m $(BUILD_DIR)/$(PROGRAM).map \
-            -Ln $(BUILD_DIR)/$(PROGRAM).lbl -vm
+        -g -Wl --dbgfile,$(BUILD_DIR)/$(PROGRAM).dbg \
+            -Ln $(BUILD_DIR)/$(PROGRAM).lbl -vm 
 
 # Optional: define symbols for both C and assembly
 # DEFINES := -DDEBUG -DVERSION=1

@@ -2,7 +2,7 @@
 ; attempthing to recreate  https://www.atarimagazines.com/vbook/displaylistssimplified.html
 
 .setcpu "6502"
-.include "atari.inc"
+.include "atari5200.inc"
 
 ;.import popa      ; pops 1 byte from cc65 param stack
 
@@ -40,7 +40,7 @@ _screen_ram =screen_ram
 ; 
 ; ------------------------------------------------------------
         .segment "DLIST"
-.align $0100
+
 
 main_dlist:
         .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"

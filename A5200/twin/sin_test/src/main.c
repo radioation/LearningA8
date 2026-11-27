@@ -1,3 +1,4 @@
+#include <atari5200.h>
 #include <string.h>
 #include <stdint.h>
 

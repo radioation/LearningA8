@@ -9,5 +9,5 @@
 
 BMP = $2000             ; bitmap address
 
-.globalzp X1, Y1, X2, Y2, COLZ
+.globalzp X1, Y1, X2, Y2, COLZ, FRMBUFHI
 .global   PLOTL, SETCOL, INICL, CLEAR0, CLEAR1

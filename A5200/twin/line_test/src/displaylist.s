@@ -37,12 +37,13 @@ _dlist_0:
 
         .byte $4D                    ; LMS + sets ANTIC D   (2 scanlines)
         .word $2000                  ; gives address of start of screen memory. ( DL and DL+1)
-        .repeat 79 
+        ;.repeat 79 
+        .repeat 96 
             .byte $0D                ; rest of ANTIC D lines ( 2 * 79 scanlines) total 159 + 2 = 160 scanlines
         .endrepeat
 
 
-        .byte $6, $6, $6, $6         ; 4 lines of GR.1 / ANTIC 6 (32 scanlines)
+;        .byte $6, $6, $6, $6         ; 4 lines of GR.1 / ANTIC 6 (32 scanlines)
 
         .byte $41                    
         .word _dlist_0             ; JVB ( vertical blank jump to start of display list

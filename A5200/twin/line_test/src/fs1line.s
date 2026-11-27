@@ -28,9 +28,11 @@ COLZ:   .res 1          ; color fill byte: $00, $55, $AA or $FF
 SPZ:    .res 2          ; screen pointer
 
 BPZ:    .res 1          ; bit pattern (mask only, no color)
-ACZ:    .res 1          ; accumulator (Bresenham erROR term)
+ACZ:    .res 1          ; accumulator (Bresenham error term)
 XLZ:    .res 1          ; x length
 YLZ:    .res 1          ; y length
+
+FRMBUFHI:  .res 1          ; hi byte of screen buffer.
 
 ;----------------------------------------------------------------
         .segment "FS1CODE"
@@ -387,26 +389,32 @@ L1F06:  STA BPZ         ; 1 col right
         BNE L1EE5
 L1F0F:  RTS
 
+;        .segment "CODE"
 ; SCRNP: set up for first pixel at (X1,Y1)
 ;   out: SPZ = row address, Y = byte within row,
 ;        BPZ = A = 2-bit mask for the pixel ($C0,$30,$0C,$03)
-SCRNP:  LDX Y1
+SCRNP:  LDX Y1   ; vertical address calc
+
+        
         LDA ROWLO,x
         STA SPZ
-        LDA ROWHI,x
-        STA SPZ+1
 
-        LDA X1
-        LSR a
-        LSR a
-        TAY             ; offset into row
-        LDA X1
-        AND #3
-        TAX
-        LDA BITS,x
-        STA BPZ         ; bit pattern for 1st pixel
+        ; add framebuffer hibyte to row high byte
+        LDA ROWHI,x
+        ORA FRMBUFHI  ; can ORA instead of Add as $2000 and $3000 are 4KB aligned
+        STA SPZ+1
+       
+        ; horizontal address calc 
+        LDX X1
+        LDY X_OFFSET, X
+    
+        LDA X_MASK, x
+        STA BPZ
+
         RTS
 
+
+;; can't really use this in ROM.
 ;;; INICL: patch CLEAR's 30 store addresses to cover BMP..BMP+$1DFF
 ;;INICL:  LDX #>BMP
 ;;        LDY #90
@@ -467,13 +475,25 @@ COLTAB: .byte $00, $55, $AA, $FF        ; fill byte for each color
 ; page aligned so LDA table,x never pays the page-cross cycle
         .align 256
 ROWLO:
-        .repeat 192, I
-        .byte <(BMP + I*40)
-        .endrepeat
+    .repeat 96,I 
+        .byte <(I * 40)
+    .endrepeat
 
-        .align 256
 ROWHI:
-        .repeat 192, I
-        .byte >(BMP + I*40)
-        .endrepeat
+    .repeat 96, I
+        .byte >( I * 40)
+    .endrepeat
 
+.align 256
+
+X_OFFSET:
+    .repeat 160, COL
+        .byte COL / 4
+    .endrepeat
+
+.align 256
+
+X_MASK:
+    .repeat 160, COL
+        .byte $C0 >> ((COL & 3) * 2)
+    .endrepeat

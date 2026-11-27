@@ -9,6 +9,7 @@
         .exportzp _fs1_x2  := X2
         .exportzp _fs1_y2  := Y2
         .exportzp _fs1_col := COLZ
+        .exportzp _fs1_fb_hi := FRMBUFHI
 
         .export _fs1_plotl  := PLOTL    ; void fs1_plotl(void)
         .export _fs1_setcol := SETCOL   ; void fs1_setcol(unsigned char c): c arrives in A

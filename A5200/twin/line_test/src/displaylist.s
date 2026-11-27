@@ -1,12 +1,12 @@
 ; displaylist.s
-; attempthing to recreate  https://www.atarimagazines.com/vbook/displaylistssimplified.html
+
 
 .setcpu "6502"
-.include "atari.inc"
+.include "atari5200.inc"
 
 ;.import popa      ; pops 1 byte from cc65 param stack
 
-.export _init_dlist, _screen_ram
+.export _init_dlist
 
 
 ; ------------------------------------------------------------
@@ -20,33 +20,23 @@
 
 ; ------------------------------------------------------------
 ; SCREEN: we keep screen RAM in a loaded rw segment 
-;
-;  * two lines of Graphics mode 2 (ANTIC 7)
-;  * 128 lines of Graphics mode 8  (will cross 4096 boundary)
-;  * four lines of Graphics mode 1
-;
+; assuming all ANTIC D gets 3840 (but I will beusing some
+; ANTIC 6 at tyhe bottom, just using 3840 in case I go full screen
 ; ------------------------------------------------------------
-        .segment "SCREENMEM"
-screen_ram:
-        .res (80 * 40 ) + ( 4* 20)              ; 40bytes per line ANTICD.  20 Bytes ANTIC6
-        .res (80 * 40 ) + ( 4* 20)              ; another screen.
-
-
-_screen_ram =screen_ram 
-
+; HARDCODED AT $2000 and $3000
 
 ; ------------------------------------------------------------
 ; DLIST: display list bytes live here directly (no copy)
 ; 
 ; ------------------------------------------------------------
         .segment "DLIST"
-.align $0100
+;.align $0100
 
-main_dlist:
+_dlist_0:
         .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"
 
         .byte $4D                    ; LMS + sets ANTIC D   (2 scanlines)
-        .word screen_ram             ; gives address of start of screen memory. ( DL and DL+1)
+        .word $2000                  ; gives address of start of screen memory. ( DL and DL+1)
         .repeat 79 
             .byte $0D                ; rest of ANTIC D lines ( 2 * 79 scanlines) total 159 + 2 = 160 scanlines
         .endrepeat
@@ -55,8 +45,23 @@ main_dlist:
         .byte $6, $6, $6, $6         ; 4 lines of GR.1 / ANTIC 6 (32 scanlines)
 
         .byte $41                    
-        .word main_dlist             ; JVB ( vertical blank jump to start of display list
+        .word _dlist_0             ; JVB ( vertical blank jump to start of display list
 
+
+_dlist_1:
+        .byte $70, $70, $70          ; 3 lines at top blank (24 blank SCAN lines provide for "overscan"
+
+        .byte $4D                    ; LMS + sets ANTIC D   (2 scanlines)
+        .word $3000                  ; gives address of start of screen memory. ( DL and DL+1)
+        .repeat 79 
+            .byte $0D                ; rest of ANTIC D lines ( 2 * 79 scanlines) total 159 + 2 = 160 scanlines
+        .endrepeat
+
+
+        .byte $6, $6, $6, $6         ; 4 lines of GR.1 / ANTIC 6 (32 scanlines)
+
+        .byte $41                    
+        .word _dlist_1             ; JVB ( vertical blank jump to start of display list
 
 
 ; ------------------------------------------------------------
@@ -68,9 +73,9 @@ main_dlist:
 
     lda #0                                       ; stop the dma
     sta DMACTL
-    lda #<main_dlist                             ; install the new display list
+    lda #<_dlist_0                             ; install the new display list
     sta SDLSTL
-    lda #>main_dlist
+    lda #>_dlist_0
     sta SDLSTH
     lda #$22                                     ; resume the DMA
     sta DMACTL

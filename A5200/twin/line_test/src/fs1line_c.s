@@ -1,9 +1,6 @@
 ;
 ; fs1line_c.s - C bindings for fs1line.s
 ;
-; cc65 puts a leading underscore on every C name, so C's "fs1_x1"
-; is "_fs1_x1" here. These lines give the asm symbols those names.
-;
 
         .include "fs1line.inc"
 

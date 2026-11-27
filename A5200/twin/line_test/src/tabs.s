@@ -1,6 +1,6 @@
 
 .setcpu "6502"
-.include "atari.inc"
+.include "atari5200.inc"
 
 .export _sin_tab, _sin_tab2
 

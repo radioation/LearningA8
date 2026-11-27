@@ -33,7 +33,7 @@ XLZ:    .res 1          ; x length
 YLZ:    .res 1          ; y length
 
 ;----------------------------------------------------------------
-        .segment "CODE"
+        .segment "FS1CODE"
 
 ; SETCOL: A = color 0..3 -> sets COLZ. Trashes X.
 SETCOL: TAX

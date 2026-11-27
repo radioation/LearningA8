@@ -1,3 +1,4 @@
+#include <atari5200.h>
 #include <string.h>
 #include <stdint.h>
 
@@ -10,25 +11,25 @@ extern int8_t sin_tab2[256];
 void set_pixel(uint8_t x, uint8_t y ) {
 
   if( (x & 0x03) == 3 ) {
-    screen_ram[ (int) y * 40 + (x>>2)  ] = 0b00000011;
+    FRAME_BUFFER_0[ (int) y * 40 + (x>>2)  ] = 0b00000011;
   }else if( (x & 0x02) == 2 ) {
-    screen_ram[ (int) y * 40 + (x>>2)  ] = 0b00001100;
+    FRAME_BUFFER_0[ (int) y * 40 + (x>>2)  ] = 0b00001100;
   }else if( (x & 0x01) == 1 ) {
-    screen_ram[ (int) y * 40 + (x>>2)  ] = 0b00110000;
+    FRAME_BUFFER_0[ (int) y * 40 + (x>>2)  ] = 0b00110000;
   }else if( (x & 0x03) == 0 ) {
-    screen_ram[ (int) y * 40 + (x>>2)  ] = 0b11000000;
+    FRAME_BUFFER_0[ (int) y * 40 + (x>>2)  ] = 0b11000000;
   }
 }
 void set_pixel2(uint8_t x, uint8_t y ) {
 
   if( (x & 0x03) == 3 ) {
-    screen_ram[ (int) y * 40 + (x>>2)  ] = 0b00000010;
+    FRAME_BUFFER_0[ (int) y * 40 + (x>>2)  ] = 0b00000010;
   }else if( (x & 0x02) == 2 ) {
-    screen_ram[ (int) y * 40 + (x>>2)  ] = 0b00001000;
+    FRAME_BUFFER_0[ (int) y * 40 + (x>>2)  ] = 0b00001000;
   }else if( (x & 0x01) == 1 ) {
-    screen_ram[ (int) y * 40 + (x>>2)  ] = 0b00100000;
+    FRAME_BUFFER_0[ (int) y * 40 + (x>>2)  ] = 0b00100000;
   }else if( (x & 0x03) == 0 ) {
-    screen_ram[ (int) y * 40 + (x>>2)  ] = 0b10000000;
+    FRAME_BUFFER_0[ (int) y * 40 + (x>>2)  ] = 0b10000000;
   }
 }
 
@@ -46,16 +47,16 @@ int main(void)
   
 
 
-  screen_ram[0] = 0xFF;
-  screen_ram[40] = 0b01000000; // higher bits are leftward.
-  screen_ram[80] = 0b10000000;
-  screen_ram[120] = 0b11000000;
+  FRAME_BUFFER_0[0] = 0xFF;
+  FRAME_BUFFER_0[40] = 0b01000000; // higher bits are leftward.
+  FRAME_BUFFER_0[80] = 0b10000000;
+  FRAME_BUFFER_0[120] = 0b11000000;
 
-  //    screen_ram[ 20 ] = 0xff;
+  //    FRAME_BUFFER_0[ 20 ] = 0xff;
   //  ANTIC D portion is 160 x 80 so mid point is 80,40
   //  but a row is 40 bytes, so midpoint of a row is ~20.
   //  so (80/2)*40 for centered row, +20 for center of the current row
-  screen_ram[(int)center_x_byte + (int)center_y *40 ] = 0b01000000;
+  FRAME_BUFFER_0[(int)center_x_byte + (int)center_y *40 ] = 0b01000000;
 
   fs1_setcol( 1 );
   fs1_line( 10, 10, 149, 10 );

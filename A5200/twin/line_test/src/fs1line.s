@@ -407,30 +407,54 @@ SCRNP:  LDX Y1
         STA BPZ         ; bit pattern for 1st pixel
         RTS
 
-; INICL: patch CLEAR's 30 store addresses to cover BMP..BMP+$1DFF
-INICL:  LDX #>BMP
-        LDY #90
-@loop:  DEY
-        TXA
-        STA CLOOP,y     ; high byte of operAND
-        DEY
-        LDA #<BMP
-        STA CLOOP,y     ; low byte of operAND
-        INX
-        DEY             ; skip opcode
-        BNE @loop
+;;; INICL: patch CLEAR's 30 store addresses to cover BMP..BMP+$1DFF
+;;INICL:  LDX #>BMP
+;;        LDY #90
+;;@loop:  DEY
+;;        TXA
+;;        STA CLOOP,y     ; high byte of operAND
+;;        DEY
+;;        LDA #<BMP
+;;        STA CLOOP,y     ; low byte of operAND
+;;        INX
+;;        DEY             ; skip opcode
+;;        BNE @loop
+;;
+;;        RTS
+;;
+;;; CLEAR: clear the bitmap (7680 bytes). Call INICL once first.
+;;CLEAR:  LDA #0
+;;        TAY
+;;CLOOP:
+;;        .repeat 30
+;;        STA $FFFF,y     ; operAND patched by INICL
+;;        .endrepeat
+;;        INY
+;;        BNE CLOOP
+;;        RTS
+;;
 
-        RTS
 
-; CLEAR: clear the bitmap (7680 bytes). Call INICL once first.
-CLEAR:  LDA #0
-        TAY
-CLOOP:
-        .repeat 30
-        STA $FFFF,y     ; operAND patched by INICL
+CLEAR0: LDA #0
+        TAY 
+CLOOP0:
+        .repeat 15,  I
+            STA $2000 + (I * $100),y     ; hardcoding $2000
         .endrepeat
         INY
-        BNE CLOOP
+        BNE CLOOP0
+        RTS
+
+    
+
+CLEAR1: LDA #0
+        TAY 
+CLOOP1:
+        .repeat 15,  I
+            STA $3000 + (I * $100),y     ; hardcoding $3000
+        .endrepeat
+        INY
+        BNE CLOOP1
         RTS
 
 ;----------------------------------------------------------------

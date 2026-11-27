@@ -12,7 +12,7 @@
 
         .export _fs1_plotl  := PLOTL    ; void fs1_plotl(void)
         .export _fs1_setcol := SETCOL   ; void fs1_setcol(unsigned char c): c arrives in A
-        .export _fs1_init   := INICL    ; void fs1_init(void)
-        .export _fs1_clear  := CLEAR    ; void fs1_clear(void)
+        .export _fs1_clear_0  := CLEAR0   ; void fs1_clear_0(void)
+        .export _fs1_clear_1  := CLEAR1   ; void fs1_clear_1(void)
 
 

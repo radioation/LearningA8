@@ -9,8 +9,8 @@ extern unsigned char fs1_x1, fs1_y1, fs1_x2, fs1_y2, fs1_col;
 #pragma zpsym ("fs1_y2")
 #pragma zpsym ("fs1_col")
 
-void fs1_init(void);                // call once before fs1_clear 
-void fs1_clear(void);               // clear the bitmap
+void fs1_clear_0(void);               // clear the bitmap
+void fs1_clear_1(void);               // clear the bitmap
 
 
 void fs1_show(void);                // switch the display to the bmp

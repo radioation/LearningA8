@@ -42,8 +42,7 @@ int main(void)
   const uint8_t center_px =  80;
 
   init_dlist();
-  fs1_init();
-  fs1_clear();
+  fs1_clear_0();
   
 
 

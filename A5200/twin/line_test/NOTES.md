@@ -6,7 +6,16 @@
 A5200 has some 'quirks'
 * As a primarily ROM based system I'll need to copy the self-modifying flight 
   simulator code to RAM.
-    
+  * this can be done by putting it in its own segment `FS1CODE` and 
+    a. defining it iwht the .cfg
+```cfg
+# FS1 code stored in ROM but needs to be in RAM DEFINE is imporatnt
+    FS1CODE:   load = ROM, run = RAM, type = rw,  define = yes;
+```
+    b. using ld65 symbols `__FS1CODE_LOAD__` (in rom?) `__FS1CODE_RUN__` (in RAM)
+       `__FSCODE_SIZE__` number of bytes to copy
+
+
 * with only 16K of RAM, I probably don't want to use ANTIC E or F ever
 
 * if I know at compile time the RAM locations, I don't have to make self-modifying 

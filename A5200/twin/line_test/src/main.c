@@ -33,6 +33,19 @@ void set_pixel2(uint8_t x, uint8_t y ) {
   }
 }
 
+extern unsigned char _FS1CODE_LOAD__[];
+extern unsigned char _FS1CODE_RUN__[];
+extern unsigned char _FS1CODE_SIZE__[];
+
+void fs_load_code()
+{
+    memcpy(
+        _FS1CODE_RUN__,
+        _FS1CODE_LOAD__,
+        (uint16_t)_FS1CODE_SIZE__
+    );
+}
+
 
 int main(void)
 {
@@ -41,11 +54,18 @@ int main(void)
   const uint8_t center_y =  40;
   const uint8_t center_px =  80;
 
+fs_load_code();
   init_dlist();
+//    memset( FRAME_BUFFER_0, 0, 3840 );   // no-zero 
   fs1_clear_0();
-  
+
+    OS.color1 = 0x0F; // text
+    OS.color2 = 0x48; // bg
+    OS.color3 = 0x88; // bg
+    OS.color4 = 0x00;
 
 
+//
   FRAME_BUFFER_0[0] = 0xFF;
   FRAME_BUFFER_0[40] = 0b01000000; // higher bits are leftward.
   FRAME_BUFFER_0[80] = 0b10000000;
@@ -57,11 +77,11 @@ int main(void)
   //  so (80/2)*40 for centered row, +20 for center of the current row
   FRAME_BUFFER_0[(int)center_x_byte + (int)center_y *40 ] = 0b01000000;
 
-  fs1_setcol( 1 );
-  fs1_line( 10, 10, 149, 10 );
-  fs1_line( 10, 10, 10, 70 );
-  fs1_line( 10, 70, 149, 70 );
-  fs1_line( 149, 10, 149, 70 );
+//  fs1_setcol( 1 );
+//  fs1_line( 10, 10, 149, 10 );
+//  fs1_line( 10, 10, 10, 70 );
+//  fs1_line( 10, 70, 149, 70 );
+//  fs1_line( 149, 10, 149, 70 );
 
   set_pixel( 0, 0 );
   set_pixel( 0, 10 );
@@ -70,11 +90,12 @@ int main(void)
   set_pixel( 6, 13 );
   set_pixel( 7, 14 );
   set_pixel( 0, 79 );
-//
-//  // sin(0) is sin_tab[0]
-//  // cos(0) just +64  sin_tab[0+64]
-//
-//  set_pixel( center_px, center_y );
+
+
+
+
+
+/*
   fs1_setcol( 2 );
   j= 0;
   for( i = 0; i < 8; i++ ) {
@@ -97,6 +118,7 @@ int main(void)
     j+=32;
 
   }
+*/
 
   while (1) { }
 
